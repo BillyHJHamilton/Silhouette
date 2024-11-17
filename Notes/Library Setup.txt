@@ -1,0 +1,18 @@
+Steps I did:
+ - Copy in the library to External/etc
+
+Project properties:
+  Debug:
+    Debugging:
+      Environment: PATH=%PATH%;$(ProjectDir)\External\SFML-2.5.1\lib\Debug\
+    C/C++ -> General:
+      Additional Include Directories: $(ProjectDir)\External\SFML-2.5.1\include;$(ProjectDir)
+    Linker -> General:
+      Additional Library Dependencies: $(ProjectDir)\External\SFML-2.5.1\lib\Debug\;%(AdditionalLibraryDirectories)
+    Input:
+      Additional Dependencies: sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)
+  Release - Same, but change all to the release versions.  No -d, etc.
+
+--------------------------------
+In theory, all the paths are relative.
+So you should just need to copy-paste the solution to somewhere new...

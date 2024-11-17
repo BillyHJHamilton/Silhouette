@@ -1,0 +1,70 @@
+void ObjectBucket::AddGameObject(ObjectRef objectRef)
+{
+	if (GameObject* const object = objectRef.Get())
+	{
+		NameHash channel = object->GetCollisionChannel();
+		ObjectRefList& list = Util::FindOrAdd(m_ChannelObjectMap, channel);
+
+		assert(!Util::Contains(list, objectRef));
+		list.push_back(objectRef);
+	}
+}
+
+void ObjectBucket::RemoveGameObject(ObjectRef objectRef)
+{
+	if (GameObject* const object = objectRef.Get())
+	{
+		NameHash channel = object->GetCollisionChannel();
+
+		ObjectRefList* const list = Util::MapFind(m_ChannelObjectMap, channel);
+		if (list)
+		{
+			Util::RemoveSwapFirstMatchingItem(*list, objectRef);
+			assert(!Util::Contains(*list, objectRef));
+		}
+	}
+}
+
+void ObjectBucket::GatherAllObjects(ObjectRefList& gatherList) const
+{
+	for (const auto& pair : m_ChannelObjectMap)
+	{
+		const ObjectRefList& channelList = pair.second;
+		Util::Append(gatherList, channelList);
+	}
+}
+
+void ObjectBucket::GatherObjectsByChannel(NameHash channelName, ObjectRefList& gatherList) const
+{
+	const ObjectRefList* const channelList = Util::MapFind(m_ChannelObjectMap, channelName);
+	if (channelList)
+	{
+		Util::Append(gatherList, *channelList);
+	}
+}
+
+ObjectRef ObjectBucket::FindFirstHitByChannel(sf::IntRect rect, NameHash channelName, GameObject* ignore) const
+{
+	const ObjectRefList* const channelList = Util::MapFind(m_ChannelObjectMap, channelName);
+	if (channelList)
+	{
+		for (const ObjectRef& ref : *channelList)
+		{
+			if (GameObject* object = ref.Get())
+			{
+				if (ignore != object && object->GetBounds().intersects(rect))
+				{
+					return ref;
+				}
+			}
+		}
+	}
+
+	return ObjectRef();
+
+}
+
+// Note: I don't know if the channels are really an optimization or not.
+// Theoretically they will be faster for collision checking if there are a lot of objects in a cell,
+// but it means more separate lists and memory fragmentation.
+// We could just dump all objects in a cell into one list and filter by channel when gathering.

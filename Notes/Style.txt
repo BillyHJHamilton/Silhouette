@@ -1,0 +1,7 @@
+Broadly follow some conventions of sfml.
+Entire project adds sf namespace to global namespace.
+
+MyClass - Class
+MyStruct - Struct
+m_Member - Member variable
+doSomething - Member function

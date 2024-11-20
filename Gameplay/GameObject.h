@@ -3,21 +3,38 @@
 #include "Core/NameHash.h"
 #include "Gameplay.h"
 #include "Gameplay/HitResult.h"
-#include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/Drawable.hpp"
+#include "Util/Rect.h"
+#include "Util/Vec2.h"
 
-class GameObject
+class GameObject : public sf::Drawable
 {
 public:
-	GameObject();
+	GameObject(IntRect bounds);
 	virtual ~GameObject();
 
 	ObjectRef GetWeakRef() { return m_RefTracker.MakeReference(this); }
 	ObjectConstRef GetConstRef() const { return m_RefTracker.MakeReference(this); }
 
-	virtual void Tick(float deltaTime);
+	// Called after the object has been added to the world.
+	virtual void Init() {};
+
+	// Called on a framely basis while within the simulation area.
+	void GameObjectTick(float deltaTime);
+	virtual void Tick(float deltaTime) {}
 
 	World* GetWorld() { return m_World; }
 	const World* GetWorld() const { return m_World; }
+
+	Component* AddComponent(Component* newComponent);
+	Component* FindComponentByType(NameHash typeName);
+	const Component* FindComponentByType(NameHash typeName) const;
+
+	template<typename ComponentType> ComponentType* AddComponent();
+	template<typename ComponentType, typename... ArgumentList> ComponentType* EmplaceComponent(ArgumentList... args);
+
+	template<typename ComponentType> ComponentType* FindComponent();
+	template<typename ComponentType> const ComponentType* FindComponent() const;
 
 	// A persistent object is updated and drawn at all times regardless of position.
 	// A non-persistent object is sorted into a world grid cell.
@@ -30,48 +47,84 @@ public:
 	//  "Solid" - Objects that block normal movement, similar to solid tiles.
 	virtual NameHash GetCollisionChannel() const { return "None"; }
 
-	sf::IntRect GetBounds() const { return m_Bounds; }
-	sf::Vector2i GetTopLeft() const { return {m_Bounds.left, m_Bounds.top}; }
+	IntRect GetBounds() const { return m_Bounds; }
+	IntVec GetTopLeft() const { return {m_Bounds.left, m_Bounds.top}; }
+	IntVec GetCentre() const { return {m_Bounds.left + m_Bounds.width/2, m_Bounds.top + m_Bounds.height/2}; }
 
 	// Move one pixel at a time.  Stops if blocked by something solid.
 	HitResult TryMoveX(int32 dx);
 	HitResult TryMoveY(int32 dy);
 
-	// TODO could have a float version of move that accumulates remainder.
+	// As above, but accumulates fractional movement until a full pixel can be moved.
+	HitResult TryMoveX(float dx);
+	HitResult TryMoveY(float dy);
 
 	// Tells the world to destroy this object.  Warning: This will immediately
 	// delete the object's memory and invalidate all references to the object.
 	void Destroy();
 
-#if DEBUG_MEMORY
-	static void CheckMemoryReleased();
-#endif
-
 	// For exclusive use by World::AddObject:
 	void SetWorld(World* world) { m_World = world; }
 
 	// For exclusive use by WorldGrid::AddObject and WorldGrid::UpdateObjectPosition:
-	void SetCachedGridCoords(sf::Vector2i coords) { m_CachedGridCoords = coords; }
-	sf::Vector2i GetCachedGridCoords() { return m_CachedGridCoords; }
+	void SetCachedGridCoords(IntVec coords) { m_CachedGridCoords = coords; }
+	IntVec GetCachedGridCoords() { return m_CachedGridCoords; }
 
 	// For exclusive use by ObjectBucket::AddObject:
 	void SetBucket(ObjectBucket* bucket) { m_Bucket = bucket; }
 
+#if DEBUG_MEMORY
+	static void CheckMemoryReleased();
+#endif
+
 protected:
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+
+	RefTracker m_RefTracker;
+
 	// Pixel-perfect position and bounding box.
-	sf::IntRect m_Bounds;
+	IntRect m_Bounds;
 
 	// If needed, we could add the ability to define other collision phases.
+
+	float m_MoveRemainderX = 0;
+	float m_MoveRemainderY = 0;
+
+	std::vector<std::unique_ptr<Component>> m_ComponentList;
 
 private:
 	World* m_World = nullptr;
 	ObjectBucket* m_Bucket = nullptr;
-	sf::Vector2i m_CachedGridCoords = {0,0};
-
-	RefTracker m_RefTracker;
+	IntVec m_CachedGridCoords = {0,0};
 
 #if DEBUG_MEMORY
 	static int s_NumCreated;
 	static int s_NumDestroyed;
 #endif
 };
+
+// Template implementations
+
+template<typename ComponentType>
+ComponentType* GameObject::AddComponent()
+{
+	return static_cast<ComponentType*>(AddComponent(new ComponentType));
+}
+
+template<typename ComponentType, typename... ArgumentList>
+ComponentType* GameObject::EmplaceComponent(ArgumentList... args)
+{
+	return static_cast<ComponentType*>(AddComponent(new ComponentType(std::forward<ArgumentList>(args)...)));
+}
+
+template<typename ComponentType>
+ComponentType* GameObject::FindComponent()
+{
+	return static_cast<ComponentType*>(FindComponentByType(ComponentType::StaticType()));
+}
+
+template<typename ComponentType>
+const ComponentType* GameObject::FindComponent() const
+{
+	return static_cast<const ComponentType*>(FindComponentByType(ComponentType::StaticType()));
+}

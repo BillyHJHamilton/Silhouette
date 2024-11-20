@@ -50,6 +50,6 @@
 </data>
  </layer>
  <objectgroup id="2" name="Object Layer 1">
-  <object id="3" gid="5" x="96" y="144" width="32" height="32"/>
+  <object id="3" gid="5" x="96" y="112" width="32" height="32"/>
  </objectgroup>
 </map>

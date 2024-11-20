@@ -18,12 +18,12 @@ void TilePatch::SetTileset(Tileset* tileset)
 	m_Tileset = tileset;
 }
 
-void TilePatch::SetTileId(Vector2i tileXY, int32 tileId)
+void TilePatch::SetTileId(IntVec tileXY, int32 tileId)
 {
 	m_TileIdGrid[tileXY.y][tileXY.x] = tileId;
 }
 
-int32 TilePatch::GetTileId(Vector2i tileXY) const
+int32 TilePatch::GetTileId(IntVec tileXY) const
 {
 	return m_TileIdGrid[tileXY.y][tileXY.x];
 }
@@ -33,10 +33,10 @@ void TilePatch::CreateVertexArray(int32 tilesPerRow)
 	//assert(tileset != nullptr);
 	//assert(data != nullptr);
 
-	const Vector2i tileSize(c_TileWidth, c_TileHeight);
+	const IntVec tileSize(c_TileWidth, c_TileHeight);
 	int32 numValidTiles = CountValidTiles();
 
-	m_VertexArray.setPrimitiveType(Quads);
+	m_VertexArray.setPrimitiveType(sf::Quads);
 	m_VertexArray.resize(numValidTiles*4LL);
 
 	// Populate vertex array with one quad per tile.
@@ -57,15 +57,15 @@ void TilePatch::CreateVertexArray(int32 tilesPerRow)
 				sf::Vertex& v2 = m_VertexArray[quadIndex*4LL + 2];
 				sf::Vertex& v3 = m_VertexArray[quadIndex*4LL + 3];
 
-				v0.position = FVec(x * tileSize.x, y * tileSize.y);
-				v1.position = FVec((x+1) * tileSize.x, y * tileSize.y);
-				v2.position = FVec((x+1) * tileSize.x, (y+1) * tileSize.y);
-				v3.position = FVec(x * tileSize.x, (y+1) * tileSize.y);
+				v0.position = ToFVec(x * tileSize.x, y * tileSize.y);
+				v1.position = ToFVec((x+1) * tileSize.x, y * tileSize.y);
+				v2.position = ToFVec((x+1) * tileSize.x, (y+1) * tileSize.y);
+				v3.position = ToFVec(x * tileSize.x, (y+1) * tileSize.y);
 
-				v0.texCoords = FVec(tileX * tileSize.x, tileY * tileSize.y);
-				v1.texCoords = FVec((tileX+1) * tileSize.x, tileY * tileSize.y);
-				v2.texCoords = FVec((tileX+1) * tileSize.x, (tileY+1) * tileSize.y);
-				v3.texCoords = FVec(tileX * tileSize.x, (tileY+1) * tileSize.y);
+				v0.texCoords = ToFVec(tileX * tileSize.x, tileY * tileSize.y);
+				v1.texCoords = ToFVec((tileX+1) * tileSize.x, tileY * tileSize.y);
+				v2.texCoords = ToFVec((tileX+1) * tileSize.x, (tileY+1) * tileSize.y);
+				v3.texCoords = ToFVec(tileX * tileSize.x, (tileY+1) * tileSize.y);
 
 				++quadIndex;
 			}
@@ -73,11 +73,11 @@ void TilePatch::CreateVertexArray(int32 tilesPerRow)
 	}
 }
 
-void TilePatch::draw(RenderTarget& target, RenderStates states) const
+void TilePatch::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (m_Tileset)
 	{
-		states.transform *= getTransform();
+		//states.transform *= getTransform();
 		states.texture = m_Tileset->m_Texture;
 		target.draw(m_VertexArray, states);
 	}

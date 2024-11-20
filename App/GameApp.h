@@ -30,15 +30,18 @@ public:
 
 	void Run();
 
+	void ToggleFullscreen();
+	float GetScreenRatio();
+
 protected:
-	void StartupLoadAssets();
-	void StartupInit();
+	virtual void StartupLoadAssets();
+	virtual void StartupInit();
 
-	void ShutdownCleanup();
+	virtual void ShutdownCleanup();
 
-	void CreateWindow();
+	virtual void CreateWindow();
 
-	void AppLoop();
+	virtual void AppLoop();
 
 	void AppHandleEvents();
 	void AppTick(float deltaTime);
@@ -46,6 +49,8 @@ protected:
 
 	sf::RenderWindow m_MainWindow;
 	sf::Clock m_Clock;
+
+	bool m_IsFullscreen;
 
 	float m_FixedFPS = 60.0f;
 	float m_LastTick = 0.0f;

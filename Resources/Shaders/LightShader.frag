@@ -4,10 +4,13 @@ varying vec2 worldPosition;
 
 uniform sampler2D texture;
 
-uniform vec2 pointLightPosition[16];
-uniform vec3 pointLightColour[16];
-uniform float pointLightRadius[16];
+uniform vec2 pointLightPosition[8];
+uniform vec3 pointLightColour[8];
+uniform float pointLightRadius[8];
 uniform int pointLightNum;
+
+uniform vec2 normalTransform0;
+uniform vec2 normalTransform1;
 
 void main()
 {
@@ -19,6 +22,13 @@ void main()
 
     // Remap normal from the texture
     vec2 normal = vec2(2.0*pixel.r - 1.0, 1.0 - 2.0*pixel.g);
+
+    mat2 normalTransform = mat2(normalTransform0, normalTransform1);
+    normal = normalTransform * normal;
+
+    //mat2 testMat = mat2(-1.0, 0.0,
+    //                     0.0, 1.0 );
+    //normal = testMat * normal;
 
     // Accumulate brightness from each light.
     vec3 accumulatedColour = vec3(0, 0, 0);
@@ -37,4 +47,6 @@ void main()
     }
 
     gl_FragColor = vec4(accumulatedColour.r, accumulatedColour.g, accumulatedColour.b, pixel.a);
+
+    //gl_FragColor = vec4(gl_ModelViewMatrix[0][0], gl_ModelViewMatrix[1][1], gl_ModelViewMatrix[0][1], 1.0);
 }

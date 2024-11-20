@@ -4,12 +4,14 @@
 #include <vector>
 
 // Some useful forward declarations.
-class World;
-class WorldGrid;
-class WorldGridCell;
+class Component;
 class GameObject;
 class GameSystem;
 class ObjectBucket;
+class World;
+class WorldGrid;
+class WorldGridCell;
+
 using ObjectRef = WeakRef<GameObject>;
 using ObjectConstRef = WeakRef<const GameObject>;
 using ObjectRefList = std::vector<ObjectRef>;

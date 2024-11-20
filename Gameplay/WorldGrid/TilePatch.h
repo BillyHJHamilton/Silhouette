@@ -8,26 +8,24 @@
 #include "SFML/Graphics/Transformable.hpp"
 #include "SFML/Graphics/VertexArray.hpp"
 
-using namespace sf;
-
 // Loosely based on tutorial from
 // https://www.sfml-dev.org/tutorials/2.5/graphics-vertex-array.php
 // Modified to allow a sparse grid.
 
-class TilePatch : public Drawable, public Transformable
+class TilePatch : public sf::Drawable
 {
 public:
 	TilePatch();
 
 	void SetTileset(Tileset* tileset);
-	void SetTileId(Vector2i tileXY, int32 tileId);
+	void SetTileId(IntVec tileXY, int32 tileId);
 
-	int32 GetTileId(Vector2i tileXY) const;
+	int32 GetTileId(IntVec tileXY) const;
 
 	void CreateVertexArray(int32 tilesPerRow);
 
 protected:
-	virtual void draw(RenderTarget& target, RenderStates states) const;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	int32 CountValidTiles();
 
@@ -35,5 +33,5 @@ protected:
 	std::array<std::array<int32,c_PatchTiles>,c_PatchTiles> m_TileIdGrid;
 
 	Tileset* m_Tileset = nullptr;
-	VertexArray m_VertexArray;
+	sf::VertexArray m_VertexArray;
 };

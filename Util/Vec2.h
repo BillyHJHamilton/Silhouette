@@ -3,27 +3,26 @@
 #include "Core/BasicTypes.h"
 #include "SFML/System/Vector2.hpp"
 
-using namespace sf;
+using IntVec = sf::Vector2i;
+using FVec = sf::Vector2f;
 
 // Convert between vectors without verbose typecasting.
-
-inline Vector2f FVec(int32 x, int32 y)
+inline FVec ToFVec(int32 x, int32 y)
 {
-	return Vector2f(static_cast<float>(x), static_cast<float>(y));
+	return FVec(static_cast<float>(x), static_cast<float>(y));
+}
+inline FVec ToFVec(IntVec v)
+{
+	return FVec(static_cast<float>(v.x), static_cast<float>(v.y));
 }
 
-inline Vector2f FVec(Vector2i v)
-{
-	return Vector2f(static_cast<float>(v.x), static_cast<float>(v.y));
-}
-
-// Support for unordered_map<Vector2i>
+// Support for unordered_map<IntVec>
 namespace std
 {
 	template <>
-	struct hash<Vector2i>
+	struct hash<IntVec>
 	{
-		size_t operator()(const Vector2i& v) const
+		size_t operator()(const IntVec& v) const
 		{
 			return static_cast<size_t>(v.x) & (static_cast<size_t>(v.y) << 32);
 		}

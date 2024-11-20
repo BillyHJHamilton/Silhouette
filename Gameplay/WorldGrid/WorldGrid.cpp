@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "App/GameApp.h"
 #include "App/AssetManager.h"
+#include "App/PerfTimer.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/WorldGrid/TilePatch.h"
 #include "SFML/Graphics/RenderTarget.hpp"
@@ -13,7 +14,7 @@
 
 #pragma region WorldGridCell
 
-WorldGridCell::WorldGridCell(Vector2i coords) :
+WorldGridCell::WorldGridCell(IntVec coords) :
 	m_Coords(coords),
 	m_Position(WorldGrid::CoordsToPosition(coords))
 { }
@@ -23,9 +24,9 @@ IntRect WorldGridCell::GetBox() const
 	return IntRect(m_Coords.x * c_PatchWidth, m_Coords.y * c_PatchHeight, c_PatchWidth, c_PatchHeight);
 }
 
-void WorldGridCell::AddTile(Vector2i position, int32 tileId)
+void WorldGridCell::AddTile(IntVec position, int32 tileId)
 {
-	Vector2i tileXY = PositionToTileXY(position);
+	IntVec tileXY = PositionToTileXY(position);
 
 	if (!m_TilePatch)
 	{
@@ -44,17 +45,22 @@ void WorldGridCell::BuildVertexArray(Tileset* tileset)
 	}
 }
 
-HitResult WorldGridCell::CheckForSolidTile(sf::IntRect rect) const
+HitResult WorldGridCell::CheckForSolidTile(IntRect rect) const
 {
+	if (!m_TilePatch)
+	{
+		return HitResult();
+	}
+
 	// Find the part of the rectangle that's inside this patch.
-	const Vector2i startTile = ClampedPositionToTileXY(Vector2i(rect.left, rect.top));
-	const Vector2i endTile = ClampedPositionToTileXY(Vector2i(rect.left + rect.width, rect.top + rect.height));
+	const IntVec startTile = ClampedPositionToTileXY(IntVec(rect.left, rect.top));
+	const IntVec endTile = ClampedPositionToTileXY(IntVec(rect.left + rect.width - 1, rect.top + rect.height - 1));
 
 	for (int y = startTile.y; y <= endTile.y; ++y)
 	{
 		for (int x = startTile.x; x <= endTile.x; ++x)
 		{
-			const Vector2i tileXY(x,y);
+			const IntVec tileXY(x,y);
 			const int32 tileId = m_TilePatch->GetTileId(tileXY);
 
 			// For now, consider all tiles solid.  We can add a parameter later.
@@ -68,7 +74,7 @@ HitResult WorldGridCell::CheckForSolidTile(sf::IntRect rect) const
 	return HitResult(); // NoHit
 }
 
-HitResult WorldGridCell::CheckForSolidObject(sf::IntRect rect, GameObject* ignore) const
+HitResult WorldGridCell::CheckForSolidObject(IntRect rect, GameObject* ignore) const
 {
 	const ObjectRef ref = m_ObjectBucket.FindFirstHitByChannel(rect, "Solid", ignore);
 	if (ref)
@@ -81,40 +87,44 @@ HitResult WorldGridCell::CheckForSolidObject(sf::IntRect rect, GameObject* ignor
 	}
 }
 
-void WorldGridCell::draw(RenderTarget& target, RenderStates states) const
+void WorldGridCell::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	if (m_TilePatch)
 	{
-		states.transform.translate(FVec(m_Position));
-		target.draw(*m_TilePatch, states);
+		// Tiles draw in patch space whereas objects draw in world space.
+		sf::RenderStates tileStates = states;
+		tileStates.transform.translate(ToFVec(m_Position));
+		target.draw(*m_TilePatch, tileStates);
 	}
+
+	target.draw(m_ObjectBucket, states);
 }
 
-Vector2i WorldGridCell::PositionToTileXY(Vector2i tilePosition) const
+IntVec WorldGridCell::PositionToTileXY(IntVec tilePosition) const
 {
 	assert(GetBox().contains(tilePosition));
 	
-	Vector2i relativePosition = tilePosition - m_Position;
+	IntVec relativePosition = tilePosition - m_Position;
 	
 	assert(relativePosition.x >= 0 && relativePosition.x < c_PatchWidth);
 	assert(relativePosition.y >= 0 && relativePosition.y < c_PatchHeight);
 
-	return Vector2i(relativePosition.x / c_TileWidth, relativePosition.y / c_TileHeight);
+	return IntVec(relativePosition.x / c_TileWidth, relativePosition.y / c_TileHeight);
 }
 
-Vector2i WorldGridCell::ClampedPositionToTileXY(Vector2i tilePosition) const
+IntVec WorldGridCell::ClampedPositionToTileXY(IntVec tilePosition) const
 {
-	Vector2i relativePosition = tilePosition - m_Position;
+	IntVec relativePosition = tilePosition - m_Position;
 
 	int32 tileX = Math::Clamp(relativePosition.x / c_TileWidth, 0, c_PatchTiles - 1);
 	int32 tileY = Math::Clamp(relativePosition.y / c_TileHeight, 0, c_PatchTiles - 1);
 
-	return Vector2i(tileX, tileY);
+	return IntVec(tileX, tileY);
 }
 
-Vector2i WorldGridCell::TileXYToPosition(Vector2i tileXY) const
+IntVec WorldGridCell::TileXYToPosition(IntVec tileXY) const
 {
-	return m_Position + Vector2i(c_TileWidth * tileXY.x, c_TileHeight * tileXY.y);
+	return m_Position + IntVec(c_TileWidth * tileXY.x, c_TileHeight * tileXY.y);
 }
 
 #pragma endregion WorldGridCell
@@ -123,9 +133,9 @@ Vector2i WorldGridCell::TileXYToPosition(Vector2i tileXY) const
 
 #pragma region WorldCell
 
-/*static*/ Vector2i WorldGrid::PositionToCoords(Vector2i worldPosition)
+/*static*/ IntVec WorldGrid::PositionToCoords(IntVec worldPosition)
 {
-	Vector2i cell;
+	IntVec cell;
 
 	if (worldPosition.x >= 0)
 	{
@@ -150,23 +160,23 @@ Vector2i WorldGridCell::TileXYToPosition(Vector2i tileXY) const
 	return cell;
 }
 
-/*static*/ Vector2i WorldGrid::CoordsToPosition(Vector2i coords)
+/*static*/ IntVec WorldGrid::CoordsToPosition(IntVec coords)
 {
-	return Vector2i(coords.x * c_PatchWidth, coords.y * c_PatchHeight);
+	return IntVec(coords.x * c_PatchWidth, coords.y * c_PatchHeight);
 }
 
-WorldGridCell& WorldGrid::GetCell(Vector2i cell)
+WorldGridCell& WorldGrid::GetCell(IntVec cell)
 {
 	auto pair = m_CellMap.try_emplace(cell, WorldGridCell(cell));
 	return pair.first->second;
 }
 
-WorldGridCell& WorldGrid::GetCellForPosition(Vector2i worldPosition)
+WorldGridCell& WorldGrid::GetCellForPosition(IntVec worldPosition)
 {
 	return GetCell(PositionToCoords(worldPosition));
 }
 
-void WorldGrid::AddTile(Vector2i position, int32 tileId)
+void WorldGrid::AddTile(IntVec position, int32 tileId)
 {
 	WorldGridCell& Cell = GetCellForPosition(position);
 	Cell.AddTile(position, tileId);
@@ -196,7 +206,7 @@ void WorldGrid::AddObject(GameObject* object)
 		}
 		else
 		{
-			Vector2i coords = PositionToCoords(object->GetTopLeft());
+			IntVec coords = PositionToCoords(object->GetTopLeft());
 			WorldGridCell& cell = GetCell(coords);
 			object->SetCachedGridCoords(coords);
 			cell.GetObjectBucket().AddObject(object);
@@ -209,8 +219,8 @@ void WorldGrid::UpdateObjectPosition(GameObject* object)
 	assert(object);
 	if (object && !object->IsPersistent())
 	{
-		Vector2i oldCoords = object->GetCachedGridCoords();
-		Vector2i newCoords = PositionToCoords(object->GetTopLeft());
+		IntVec oldCoords = object->GetCachedGridCoords();
+		IntVec newCoords = PositionToCoords(object->GetTopLeft());
 		if (oldCoords != newCoords)
 		{
 			WorldGridCell& oldCell = GetCell(oldCoords);
@@ -222,6 +232,7 @@ void WorldGrid::UpdateObjectPosition(GameObject* object)
 
 void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 {
+	PerfTimer timer(__FUNCTION__);
 	assert(m_TickList.empty());
 
 	ForEachCellInRect(tickArea,
@@ -236,7 +247,7 @@ void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 	{
 		if (GameObject* object = ref.Get())
 		{
-			object->Tick(deltaTime);
+			object->GameObjectTick(deltaTime);
 		}
 	}
 
@@ -274,22 +285,23 @@ HitResult WorldGrid::CheckForSolid(IntRect rect, GameObject* ignore) const
 	return result;
 }
 
-void WorldGrid::draw(RenderTarget& target, RenderStates states) const
+void WorldGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	for (auto& pair : m_CellMap)
 	{
 		target.draw(pair.second, states);
 	}
+	target.draw(m_PersistentBucket, states);
 }
 
-void WorldGrid::ForEachCellInRect(sf::IntRect rect, std::function<bool(WorldGridCell&)> lambda)
+void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda)
 {
 	for (int32 x = rect.left; x < rect.left + rect.width; x += c_PatchWidth)
 	{
-		for (int32 y = rect.top; y < rect.top + rect.height; x += c_PatchHeight)
+		for (int32 y = rect.top; y < rect.top + rect.height; y += c_PatchHeight)
 		{
-			const Vector2i coords = PositionToCoords(Vector2i(x,y));
-			if (WorldGridCell* cell = Util::MapFind(m_CellMap, coords))
+			const IntVec coords = PositionToCoords(IntVec(x,y));
+			if (WorldGridCell* cell = Util::Find(m_CellMap, coords))
 			{
 				const bool keepLooping = lambda(*cell);
 				if (!keepLooping)
@@ -301,14 +313,14 @@ void WorldGrid::ForEachCellInRect(sf::IntRect rect, std::function<bool(WorldGrid
 	}
 }
 
-void WorldGrid::ForEachCellInRect(sf::IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const
+void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const
 {
 	for (int32 x = rect.left; x < rect.left + rect.width; x += c_PatchWidth)
 	{
-		for (int32 y = rect.top; y < rect.top + rect.height; x += c_PatchHeight)
+		for (int32 y = rect.top; y < rect.top + rect.height; y += c_PatchHeight)
 		{
-			const Vector2i coords = PositionToCoords(Vector2i(x,y));
-			if (const WorldGridCell* cell = Util::MapFind(m_CellMap, coords))
+			const IntVec coords = PositionToCoords(IntVec(x,y));
+			if (const WorldGridCell* cell = Util::Find(m_CellMap, coords))
 			{
 				const bool keepLooping = lambda(*cell);
 				if (!keepLooping)

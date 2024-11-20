@@ -9,43 +9,41 @@
 #include "Gameplay/WorldGrid/ObjectBucket.h"
 #include "Gameplay/WorldGrid/TileConstants.h"
 #include "Gameplay/WorldGrid/Tileset.h"
-#include "SFML/Graphics/Rect.hpp"
 #include "SFML/Graphics/Drawable.hpp"
+#include "Util/Rect.h"
 #include "Util/Vec2.h"
-
-using namespace sf;
 
 class TilePatch;
 struct Tileset;
 
 // Spatial partition.
 
-class WorldGridCell : public Drawable
+class WorldGridCell : public sf::Drawable
 {
 public:
-	WorldGridCell(Vector2i coords);
+	WorldGridCell(IntVec coords);
 	IntRect GetBox() const;
 
-	void AddTile(Vector2i position, int32 tileId);
+	void AddTile(IntVec position, int32 tileId);
 	void BuildVertexArray(Tileset* tileset);
 
 	const ObjectBucket& GetObjectBucket() const { return m_ObjectBucket; }
 	ObjectBucket& GetObjectBucket() { return m_ObjectBucket; }
 
-	HitResult CheckForSolidTile(sf::IntRect rect) const;
-	HitResult CheckForSolidObject(sf::IntRect rect, GameObject* ignore = nullptr) const;
+	HitResult CheckForSolidTile(IntRect rect) const;
+	HitResult CheckForSolidObject(IntRect rect, GameObject* ignore = nullptr) const;
 
 protected:
 	// Drawable
-	virtual void draw(RenderTarget& target, RenderStates states) const override;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-	Vector2i PositionToTileXY(Vector2i position) const;
-	Vector2i ClampedPositionToTileXY(Vector2i position) const;
+	IntVec PositionToTileXY(IntVec position) const;
+	IntVec ClampedPositionToTileXY(IntVec position) const;
 
-	Vector2i TileXYToPosition(Vector2i tileXY) const;
+	IntVec TileXYToPosition(IntVec tileXY) const;
 
-	Vector2i m_Coords;
-	Vector2i m_Position;
+	IntVec m_Coords;
+	IntVec m_Position;
 
 	// If needed, we could have a map or array of patches per layer in the future.
 	std::shared_ptr<TilePatch> m_TilePatch;
@@ -53,34 +51,34 @@ protected:
 	ObjectBucket m_ObjectBucket;
 };
 
-class WorldGrid : public Drawable
+class WorldGrid : public sf::Drawable
 {
 public:
-	static Vector2i PositionToCoords(Vector2i worldPosition);
-	static Vector2i CoordsToPosition(Vector2i cellCoordinates);
+	static IntVec PositionToCoords(IntVec worldPosition);
+	static IntVec CoordsToPosition(IntVec cellCoordinates);
 
 	// Gets the cell, creating it if it does not exist.
-	WorldGridCell& GetCell(Vector2i cell);
-	WorldGridCell& GetCellForPosition(Vector2i worldPosition);
+	WorldGridCell& GetCell(IntVec cell);
+	WorldGridCell& GetCellForPosition(IntVec worldPosition);
 
-	void AddTile(Vector2i position, int32 tileId);
+	void AddTile(IntVec position, int32 tileId);
 	void BuildVertexArrays();
 
 	void AddObject(GameObject* object);
 	void UpdateObjectPosition(GameObject* object);
-	void TickObjects(float deltaTime, sf::IntRect tickArea);
+	void TickObjects(float deltaTime, IntRect tickArea);
 
-	HitResult CheckForSolid(sf::IntRect rect, GameObject* ignore = nullptr) const;
+	HitResult CheckForSolid(IntRect rect, GameObject* ignore = nullptr) const;
 
 protected:
 	// Drawable
-	virtual void draw(RenderTarget& target, RenderStates states) const override;
+	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	// The bool return value is "Keep looping?", so return false if you're all done.
-	void ForEachCellInRect(sf::IntRect rect, std::function<bool(WorldGridCell&)> lambda);
-	void ForEachCellInRect(sf::IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const;
+	void ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda);
+	void ForEachCellInRect(IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const;
 
-	std::unordered_map<Vector2i,WorldGridCell> m_CellMap;
+	std::unordered_map<IntVec,WorldGridCell> m_CellMap;
 	ObjectBucket m_PersistentBucket;
 
 	// Only used in one function, but member variable to reduce allocations.

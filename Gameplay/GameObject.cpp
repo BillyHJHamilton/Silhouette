@@ -1,9 +1,12 @@
 #include "GameObject.h"
+
+#include "Gameplay/Component.h"
 #include "Gameplay/WorldGrid/ObjectBucket.h"
 #include "Gameplay/World.h"
 #include "Util/Math.h"
 
-GameObject::GameObject()
+GameObject::GameObject(IntRect bounds) :
+	m_Bounds(bounds)
 {
 	#if DEBUG_MEMORY
 		++s_NumCreated;
@@ -35,16 +38,44 @@ void GameObject::CheckMemoryReleased()
 }
 #endif
 
-void GameObject::Tick(float deltaTime)
+void GameObject::GameObjectTick(float deltaTime)
 {
 	assert(m_World != nullptr);
 	assert(m_Bucket != nullptr);
 
 	// Tick components
-	/*for (std::unique_ptr<Component>& NextComponent : m_ComponentList)
+	for (std::unique_ptr<Component>& nextComponent : m_ComponentList)
 	{
-		NextComponent->Tick(deltaTime);
-	}*/
+		nextComponent->Tick(deltaTime);
+	}
+
+	// Trigger derived class trick.
+	Tick(deltaTime);
+}
+
+Component* GameObject::AddComponent(Component* newComponent)
+{
+	assert(newComponent != nullptr);
+	m_ComponentList.emplace_back(newComponent);
+	newComponent->SetOwner(this);
+	return newComponent;
+}
+
+const Component* GameObject::FindComponentByType(NameHash typeName) const
+{
+	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
+	{
+		if (NextComponent->GetTypeName() == typeName)
+		{
+			return NextComponent.get();
+		}
+	}
+	return nullptr;
+}
+
+Component* GameObject::FindComponentByType(NameHash typeName)
+{
+	return const_cast<Component*>(const_cast<const GameObject*>(this)->FindComponentByType(typeName));
 }
 
 // Move code inspired by "Celeste & TowerFall Physics"
@@ -58,7 +89,7 @@ HitResult GameObject::TryMoveX(int32 dx)
 	int32 sign = Math::Sign(dx);
 	while (dx != 0)
 	{
-		sf::IntRect testRect = m_Bounds;
+		IntRect testRect = m_Bounds;
 		testRect.left += sign;
 
 		result = m_World->CheckForSolid(testRect, this);
@@ -90,7 +121,7 @@ HitResult GameObject::TryMoveY(int32 dy)
 	int32 sign = Math::Sign(dy);
 	while (dy != 0)
 	{
-		sf::IntRect testRect = m_Bounds;
+		IntRect testRect = m_Bounds;
 		testRect.top += sign;
 
 		result = m_World->CheckForSolid(testRect, this);
@@ -114,10 +145,56 @@ HitResult GameObject::TryMoveY(int32 dy)
 	return result;
 }
 
+HitResult GameObject::TryMoveX(float dx)
+{
+	m_MoveRemainderX += dx;
+	int32 intMove = static_cast<int32>(m_MoveRemainderX);
+	if (intMove != 0)
+	{
+		m_MoveRemainderX -= static_cast<float>(intMove);
+		return TryMoveX(intMove);
+	}
+	return HitResult();
+}
+
+HitResult GameObject::TryMoveY(float dy)
+{
+	m_MoveRemainderY += dy;
+	int32 intMove = static_cast<int32>(m_MoveRemainderY);
+	if (intMove != 0)
+	{
+		m_MoveRemainderY -= static_cast<float>(intMove);
+		return TryMoveY(intMove);
+	}
+	return HitResult();
+}
+
 void GameObject::Destroy()
 {
 	if (m_Bucket)
 	{
 		m_Bucket->DestroyObject(this);
 	}
+}
+
+void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	assert(m_World != nullptr);
+
+	states.transform.translate(ToFVec(GetTopLeft()));
+
+	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
+	{
+		NextComponent->Draw(target, states);
+	}
+
+/*	if (m_DrawOrigin)
+	{
+		sf::RectangleShape debugRectangle;
+		debugRectangle.setFillColor(sf::Color::Red);
+		debugRectangle.setOutlineColor(sf::Color::Transparent);
+		debugRectangle.setPosition(m_Position - Vec2{1.0f, 1.0f});
+		debugRectangle.setSize({2.0f,2.0f});
+		renderTarget.draw(debugRectangle);
+	}*/
 }

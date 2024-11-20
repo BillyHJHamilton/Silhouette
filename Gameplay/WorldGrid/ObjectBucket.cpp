@@ -1,5 +1,6 @@
 #include "ObjectBucket.h"
 #include "Gameplay/GameObject.h"
+#include "SFML/Graphics/RenderTarget.hpp"
 #include "Util/VectorUtil.h"
 
 void ObjectBucket::AddObject(GameObject* newObject)
@@ -70,7 +71,7 @@ void ObjectBucket::GatherObjectsByChannel(NameHash channelName, ObjectConstRefLi
 	}
 }
 
-void ObjectBucket::GatherObjectsHitByChannel(sf::IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
+void ObjectBucket::GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{
@@ -83,7 +84,7 @@ void ObjectBucket::GatherObjectsHitByChannel(sf::IntRect rect, NameHash channelN
 	}
 }
 
-void ObjectBucket::GatherObjectsHitByChannel(sf::IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
+void ObjectBucket::GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{
@@ -96,7 +97,7 @@ void ObjectBucket::GatherObjectsHitByChannel(sf::IntRect rect, NameHash channelN
 	}
 }
 
-ObjectRef ObjectBucket::FindFirstHitByChannel(sf::IntRect rect, NameHash channelName, GameObject* ignore) const
+ObjectRef ObjectBucket::FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{
@@ -107,3 +108,15 @@ ObjectRef ObjectBucket::FindFirstHitByChannel(sf::IntRect rect, NameHash channel
 	}
 	return ObjectRef();
 }
+
+void ObjectBucket::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
+	{
+		if (objectPtr)
+		{
+			target.draw(*objectPtr, states);
+		}
+	}
+}
+

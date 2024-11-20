@@ -3,13 +3,14 @@
 #include <array>
 #include "Core/BasicTypes.h"
 #include "SFML/Graphics/Shader.hpp"
+#include "Util/Vec2.h"
 
 class ShaderManager
 {
 public:
 	// Maximum number of lights that can be rendered at once.
 	// Must match array sizes in fragment shader.
-	static constexpr int32 c_MaxPointLights = 16;
+	static constexpr int32 c_MaxPointLights = 8;
 
 	void LoadShaders();
 	sf::Shader* GetLightShader();
@@ -17,8 +18,11 @@ public:
 	// API for gathering lights.
 	// Each frame, call ClearLights, then add all the lights that should render.
 	void ClearLights();
-	void AddPointLight(sf::Vector2f position, sf::Vector3f colour, float radius);
+	void AddPointLight(FVec position, sf::Vector3f colour, float radius);
 	void SetLightUniforms();
+
+	void SetNormalTransform(float rotation, FVec scale);
+	void ClearNormalTransform();
 
 private:
 	sf::Shader m_LightShader;

@@ -1,6 +1,10 @@
 #include "GameApp.h"
 
 #include "App/AssetManager.h"
+#include "App/PerfTimer.h"
+#include "Gameplay/Component.h"
+#include "Gameplay/GameObject.h"
+#include "Gameplay/GameSystem.h"
 #include "Gameplay/World.h"
 #include "SFML/Window/Event.hpp"
 #include "Util/Random.h"
@@ -62,36 +66,51 @@ void GameApp::Run()
 
 void GameApp::StartupLoadAssets()
 {
-	m_AssetManager.LoadTexture("Tileset", "Resources/Textures/MiniTileset.png");
-	m_ShaderManager.LoadShaders();
 }
 
 void GameApp::StartupInit()
 {
 	Random::SeedGenerator();
-
-	// TODO maybe handle this pointer better
-	m_CurrentWorld = new World();
-	m_CurrentWorld->Init();
 }
 
 void GameApp::ShutdownCleanup()
 {
-	delete m_CurrentWorld;
 }
 
 void GameApp::CreateWindow()
 {
-	// TODO Provide a way to configure the window.
 	m_MainWindow.create(sf::VideoMode(640, 480), "Silhouette");
-
 	m_MainWindow.setKeyRepeatEnabled(false);
+	m_MainWindow.setVerticalSyncEnabled(false);
+	m_MainWindow.setFramerateLimit(0);
 
 	m_Clock.restart();
 }
 
+void GameApp::ToggleFullscreen()
+{
+	if (!m_IsFullscreen)
+	{
+		m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
+		m_IsFullscreen = true;
+	}
+	else
+	{
+		m_MainWindow.create(sf::VideoMode(640, 480), "Silhouette");
+		m_IsFullscreen = false;
+	}
+}
+
+float GameApp::GetScreenRatio()
+{
+	sf::Vector2u screenSize = m_MainWindow.getSize();
+	return static_cast<float>(screenSize.x) / static_cast<float>(screenSize.y);
+}
+
 void GameApp::AppLoop()
 {
+	int32 numDraws = 0;
+
 	double frameStart = GetClockTime();
 	while (m_MainWindow.isOpen())
 	{
@@ -105,11 +124,14 @@ void GameApp::AppLoop()
 		do
 		{
 			AppDraw();
+			++numDraws;
 		}
 		while (GetClockTime() < frameEnd);
 
 		frameStart = frameEnd;
 	}
+
+	std::cout << "Average framerate: " << numDraws/frameStart << " FPS" << std::endl;
 }
 
 void GameApp::AppHandleEvents()
@@ -136,6 +158,12 @@ void GameApp::AppHandleEvents()
 
 void GameApp::AppTick(float deltaTime)
 {
+	{
+		PerfTimer timer("VSync");
+		m_ShaderManager.ClearLights();
+		m_ShaderManager.ClearNormalTransform();
+	}
+
 	if (m_CurrentWorld != nullptr)
 	{
 		m_CurrentWorld->Tick(deltaTime);
@@ -144,6 +172,8 @@ void GameApp::AppTick(float deltaTime)
 
 void GameApp::AppDraw()
 {
+	PerfTimer timer(__FUNCTION__);
+
 	m_MainWindow.clear();
 	if (m_CurrentWorld != nullptr)
 	{
@@ -164,10 +194,14 @@ void GameApp::StartupEngineTests()
 
 AppTestWrapper::~AppTestWrapper()
 {
+#if PERF_TEST
+	PerfTimer::PrintAll();
+#endif
+
 #if DEBUG_MEMORY
-	//GameObject::CheckMemoryReleased();
-	//GameSystem::CheckMemoryReleased();
-	//Component::CheckMemoryReleased();
+	GameObject::CheckMemoryReleased();
+	GameSystem::CheckMemoryReleased();
+	Component::CheckMemoryReleased();
 	RefControlBlock::CheckMemoryReleased();
 #endif
 }

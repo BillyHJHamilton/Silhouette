@@ -13,7 +13,7 @@ namespace Util
 	}
 
 	template<typename KeyType, typename ValueType>
-	ValueType* MapFind(std::unordered_map<KeyType,ValueType>& map, KeyType key)
+	ValueType* Find(std::unordered_map<KeyType,ValueType>& map, KeyType key)
 	{
 		auto itr = map.find(key);
 		if (itr != map.end())
@@ -27,7 +27,7 @@ namespace Util
 	}
 
 	template<typename KeyType, typename ValueType>
-	const ValueType* MapFind(const std::unordered_map<KeyType,ValueType>& map, KeyType key)
+	const ValueType* Find(const std::unordered_map<KeyType,ValueType>& map, KeyType key)
 	{
 		auto itr = map.find(key);
 		if (itr != map.end())

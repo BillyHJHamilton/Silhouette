@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -115,5 +116,18 @@ namespace Util
 	void Append(std::vector<VectorItemType>& first, const std::vector<VectorItemType>& second)
 	{
 		first.insert(first.end(), second.begin(), second.end());
+	}
+
+	// Sorts the list with std::sort.
+	// Ascending requires operator< while descending requires operator>.
+	template<typename VectorItemType>
+	void SortAscending(std::vector<VectorItemType>& v)
+	{
+		std::sort(v.begin(), v.end());
+	}
+	template<typename VectorItemType>
+	void SortDescending(std::vector<VectorItemType>& v)
+	{
+		std::sort(v.begin(), v.end(), std::greater<VectorItemType>());
 	}
 }

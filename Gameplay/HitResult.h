@@ -2,7 +2,7 @@
 
 #include "Gameplay.h"
 #include "Gameplay/WorldGrid/TileConstants.h"
-#include "SFML/System/Vector2.hpp"
+#include "Util/Vec2.h"
 
 // Returned when we check if there's something solid at a location.
 struct HitResult
@@ -17,7 +17,7 @@ struct HitResult
 
 	// Filled if tile is hit.
 	int32 m_TileId = c_InvalidTile;
-	sf::Vector2i m_TilePosition = sf::Vector2i{0,0};
+	IntVec m_TilePosition = IntVec{0,0};
 
 	// Filled if object is hit.
 	ObjectRef m_Object;
@@ -26,7 +26,7 @@ struct HitResult
 		m_Result(NoHit)
 	{ }
 
-	HitResult(int32 tileId, sf::Vector2i tilePosition) :
+	HitResult(int32 tileId, IntVec tilePosition) :
 		m_Result(HitTile),
 		m_TileId(tileId),
 		m_TilePosition(tilePosition)

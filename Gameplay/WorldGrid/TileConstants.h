@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/BasicTypes.h"
-#include "SFML/System/Vector2.hpp"
+#include "Util/Vec2.h"
 
 static constexpr int32 c_InvalidTile = -1;
 

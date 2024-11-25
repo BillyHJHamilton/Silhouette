@@ -30,6 +30,8 @@ public:
 
 	virtual void Tick(float deltaTime) override;
 
+	virtual bool IsPersistent() const { return true; }
+
 protected:
 	enum class AnimState
 	{

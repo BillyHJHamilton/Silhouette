@@ -243,6 +243,8 @@ void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 		}
 	);
 
+	m_PersistentBucket.GatherAllObjects(m_TickList);
+
 	for (ObjectRef& ref : m_TickList)
 	{
 		if (GameObject* object = ref.Get())

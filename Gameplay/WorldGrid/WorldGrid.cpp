@@ -308,12 +308,13 @@ void WorldGrid::GatherDraw(RenderManager& renderManager, sf::IntRect gatherRect)
 
 void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda)
 {
-	for (int32 x = rect.left; x < rect.left + rect.width; x += c_PatchWidth)
+	const IntVec startCell = PositionToCoords({rect.left, rect.top});
+	const IntVec endCell = PositionToCoords({rect.left+rect.width, rect.top + rect.height});
+	for (int32 x = startCell.x; x <= endCell.x; ++x)
 	{
-		for (int32 y = rect.top; y < rect.top + rect.height; y += c_PatchHeight)
+		for (int32 y = startCell.y; y <= endCell.y; ++y)
 		{
-			const IntVec coords = PositionToCoords(IntVec(x,y));
-			if (WorldGridCell* cell = Util::Find(m_CellMap, coords))
+			if (WorldGridCell* cell = Util::Find(m_CellMap, {x,y}))
 			{
 				const bool keepLooping = lambda(*cell);
 				if (!keepLooping)
@@ -327,12 +328,13 @@ void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell
 
 void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const
 {
-	for (int32 x = rect.left; x < rect.left + rect.width; x += c_PatchWidth)
+	const IntVec startCell = PositionToCoords({rect.left, rect.top});
+	const IntVec endCell = PositionToCoords({rect.left+rect.width, rect.top + rect.height});
+	for (int32 x = startCell.x; x <= endCell.x; ++x)
 	{
-		for (int32 y = rect.top; y < rect.top + rect.height; y += c_PatchHeight)
+		for (int32 y = startCell.y; y <= endCell.y; ++y)
 		{
-			const IntVec coords = PositionToCoords(IntVec(x,y));
-			if (const WorldGridCell* cell = Util::Find(m_CellMap, coords))
+			if (const WorldGridCell* cell = Util::Find(m_CellMap, {x,y}))
 			{
 				const bool keepLooping = lambda(*cell);
 				if (!keepLooping)

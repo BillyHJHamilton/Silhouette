@@ -58,7 +58,7 @@ void PerfTimer::PrintAll()
 	// Print them.
 	if (list.size() > 0)
 	{
-		std::cout << std::endl << "Average Performance Results: " << std::endl
+		std::cout << "Average Performance Results: " << std::endl
 			<< std::fixed << std::setprecision(3);
 		for (const TimerResult& pair : list)
 		{

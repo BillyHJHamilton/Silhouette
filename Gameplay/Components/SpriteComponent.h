@@ -3,6 +3,7 @@
 #include "Core/Event.h"
 #include "Core/TypeInfo.h"
 #include "Gameplay/Component.h"
+#include "Gameplay/RenderManager.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "Util/Vec2.h"
 #include "Util/Rect.h"
@@ -14,6 +15,7 @@ public:
 	MACRO_DeclareTypeInfo(SpriteComponent)
 
 	void SetVisible(bool visibility) { m_Visible = visibility; };
+	void SetLayer(RenderLayer::Enum layer) { m_RenderLayer = layer; }
 
 	enum class AnimationMode
 	{
@@ -32,7 +34,16 @@ public:
 	MulticastEvent<> EventAnimationEnd;
 
 	virtual void Tick(float deltaTime) override;
-	virtual void Draw(sf::RenderTarget& renderTarget, const sf::RenderStates& renderStates) const override;
+	virtual void GatherDraw(RenderManager& renderManager, const sf::Transform& objectTransform) const override;
+
+	// Make sure to set up subimages before calling this, or it will return the full texture size.
+	IntVec GetSize() const;
+
+	// The following functions depend on GetSize, so set up subimages before using:
+	void CentreOrigin();
+
+	enum class Alignment { TopLeft, TopCentre, TopRight, LeftCentre, Centre, RightCentre, BottomLeft, BottomCentre, BottomRight };
+	void CentreOriginAndAlignToBoundingBox(Alignment alignment);
 
 	// Public to allow changing local transform, etc.
 	sf::Sprite m_Sprite;
@@ -42,6 +53,7 @@ private:
 	void UpdateSpriteRect();
 
 	bool m_Visible = true;
+	RenderLayer::Enum m_RenderLayer = RenderLayer::MainObjects_Lit;
 
 	bool m_SubimagesEnabled = false;
 	IntVec m_SubimageSize = {32, 32};

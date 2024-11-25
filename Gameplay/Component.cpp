@@ -51,5 +51,8 @@ World* Component::GetWorld()
 void Component::SetOwner(GameObject* newOwner)
 {
 	m_Owner = newOwner;
-	OnAddedToObject(newOwner);
+	if (newOwner)
+	{
+		OnAddedToObject(*newOwner);
+	}
 }

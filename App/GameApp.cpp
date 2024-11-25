@@ -109,7 +109,9 @@ float GameApp::GetScreenRatio()
 
 void GameApp::AppLoop()
 {
-	int32 numDraws = 0;
+	#if PERF_TEST
+		int32 numDraws = 0;
+	#endif
 
 	double frameStart = GetClockTime();
 	while (m_MainWindow.isOpen())
@@ -124,14 +126,19 @@ void GameApp::AppLoop()
 		do
 		{
 			AppDraw();
-			++numDraws;
+
+			#if PERF_TEST
+				++numDraws;
+			#endif
 		}
 		while (GetClockTime() < frameEnd);
 
 		frameStart = frameEnd;
 	}
 
-	std::cout << "Average framerate: " << numDraws/frameStart << " FPS" << std::endl;
+	#if PERF_TEST
+		std::cout << std::endl << "Average framerate: " << numDraws/frameStart << " FPS" << std::endl;
+	#endif
 }
 
 void GameApp::AppHandleEvents()

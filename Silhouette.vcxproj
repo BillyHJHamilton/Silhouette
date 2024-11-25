@@ -138,7 +138,9 @@
     <ClCompile Include="App\GameApp.cpp" />
     <ClCompile Include="App\InputEventManager.cpp" />
     <ClCompile Include="App\PerfTimer.cpp" />
+    <ClCompile Include="Gameplay\Components\BoundsDrawComponent.cpp" />
     <ClCompile Include="Gameplay\Components\CameraComponent.cpp" />
+    <ClCompile Include="Gameplay\RenderManager.cpp" />
     <ClCompile Include="Platformer\Main.cpp" />
     <ClCompile Include="App\ShaderManager.cpp" />
     <ClCompile Include="Core\Event.cpp" />
@@ -178,11 +180,13 @@
     <ClInclude Include="External\Pugixml\pugiconfig.hpp" />
     <ClInclude Include="External\Pugixml\pugixml.hpp" />
     <ClInclude Include="Gameplay\Component.h" />
+    <ClInclude Include="Gameplay\Components\BoundsDrawComponent.h" />
     <ClInclude Include="Gameplay\Components\CameraComponent.h" />
     <ClInclude Include="Gameplay\Components\SpriteComponent.h" />
     <ClInclude Include="Gameplay\GameObject.h" />
     <ClInclude Include="Gameplay\Gameplay.h" />
     <ClInclude Include="Gameplay\GameSystem.h" />
+    <ClInclude Include="Gameplay\RenderManager.h" />
     <ClInclude Include="Gameplay\WorldGrid\LoadWorld.h" />
     <ClInclude Include="Gameplay\WorldGrid\ObjectBucket.h" />
     <ClInclude Include="Gameplay\HitResult.h" />

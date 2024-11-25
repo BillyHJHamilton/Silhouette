@@ -177,24 +177,13 @@ void GameObject::Destroy()
 	}
 }
 
-void GameObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void GameObject::GatherDraw(RenderManager& renderManager) const
 {
-	assert(m_World != nullptr);
-
-	states.transform.translate(ToFVec(GetTopLeft()));
+	sf::Transform objectTransform;
+	objectTransform.translate(ToFVec(GetTopLeft()));
 
 	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
 	{
-		NextComponent->Draw(target, states);
+		NextComponent->GatherDraw(renderManager, objectTransform);
 	}
-
-/*	if (m_DrawOrigin)
-	{
-		sf::RectangleShape debugRectangle;
-		debugRectangle.setFillColor(sf::Color::Red);
-		debugRectangle.setOutlineColor(sf::Color::Transparent);
-		debugRectangle.setPosition(m_Position - Vec2{1.0f, 1.0f});
-		debugRectangle.setSize({2.0f,2.0f});
-		renderTarget.draw(debugRectangle);
-	}*/
 }

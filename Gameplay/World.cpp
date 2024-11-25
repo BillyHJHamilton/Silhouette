@@ -3,10 +3,12 @@
 #include "App/PerfTimer.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/WorldGrid/WorldGrid.h"
+#include "Gameplay/RenderManager.h"
 
 World::World()
 {
 	m_WorldGrid = std::make_unique<WorldGrid>();
+	m_RenderManager = std::make_unique<RenderManager>();
 }
 
 World::~World()
@@ -22,35 +24,24 @@ void World::Tick(float deltaTime)
 {
 	PerfTimer timer(__FUNCTION__);
 
-	ShaderManager& shaderManager = GameApp::GetShaderManager();
-	shaderManager.ClearLights();
-
 	// Tick game objects
 	IntRect tickArea(0, 0, 640, 480); // TODO
 	m_WorldGrid->TickObjects(deltaTime, tickArea);
-
-	{
-		shaderManager.AddPointLight( {100.0f, 100.0f}, {1.0f, 0.0f, 0.0f}, 300.0f);
-		shaderManager.AddPointLight( {300.0f, 150.0f}, {1.0f, 0.8f, 0.0f}, 300.0f);
-		shaderManager.AddPointLight( {200.0f, 500.0f}, {0.0f, 0.0f, 1.0f}, 300.0f);
-		shaderManager.SetLightUniforms();
-	}
 
 	++m_TickNumber;
 }
 
 void World::Draw(sf::RenderTarget& renderTarget) const
 {
-	sf::RenderStates states;
-
-	ShaderManager& shaderManager = GameApp::GetShaderManager();
-	if (sf::Shader* lightShader = shaderManager.GetLightShader())
-	{
-		states.shader = lightShader;
-	}
+	// Draw area in main view, plus neighbouring patches (in case large sprites are spilling over).
+	const FVec viewTopLeft = m_MainView.getCenter() - 0.5f*m_MainView.getSize();
+	const IntVec drawTopLeft = RoundToIntVec(viewTopLeft - 0.5f*ToFVec(c_PatchWidth, c_PatchHeight));
+	const IntVec drawSize = RoundToIntVec(m_MainView.getSize()) + 2*IntVec(c_PatchWidth, c_PatchHeight);
+	const IntRect m_DrawRect(drawTopLeft, drawSize);
 
 	renderTarget.setView(m_MainView);
-	renderTarget.draw(*m_WorldGrid, states);
+	m_WorldGrid->GatherDraw(*m_RenderManager, m_DrawRect);
+	m_RenderManager->DrawAll(renderTarget);
 }
 
 WorldGrid& World::GetWorldGrid()

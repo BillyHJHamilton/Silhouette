@@ -41,6 +41,7 @@ public:
 
 protected:
 	std::unique_ptr<WorldGrid> m_WorldGrid;
+	std::unique_ptr<RenderManager> m_RenderManager;
 
 	sf::View m_MainView;
 

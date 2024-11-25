@@ -9,7 +9,7 @@
 void PlatformerApp::StartupLoadAssets()
 {
 	m_AssetManager.LoadTexture("Tileset", "Resources/Textures/MiniTileset.png");
-	m_AssetManager.LoadTexture("Player", "Resources/Textures/Player.png");
+	m_AssetManager.LoadTexture("Player", "Resources/Textures/BalletSheet.png");
 	m_ShaderManager.LoadShaders();
 }
 

@@ -2,7 +2,7 @@
 
 #include "Core/TypeInfo.h"
 #include "Gameplay/Gameplay.h"
-#include "SFML/Graphics/RenderStates.hpp"
+#include "SFML/Graphics/Transform.hpp"
 
 class Component : public ITypeInfoProvider
 {
@@ -11,7 +11,7 @@ public:
 	virtual ~Component();
 	MACRO_DeclareTypeInfo(Component)
 
-	virtual void OnAddedToObject(GameObject* newOwner) {};
+	virtual void OnAddedToObject(GameObject& newOwner) {};
 
 	const GameObject* GetOwner() const { return m_Owner; }
 	GameObject* GetOwner() { return m_Owner; }
@@ -20,7 +20,7 @@ public:
 	World* GetWorld();
 
 	virtual void Tick(float deltaTime) {};
-	virtual void Draw(sf::RenderTarget& renderTarget, const sf::RenderStates& renderStates) const {};
+	virtual void GatherDraw(RenderManager& renderManager, const sf::Transform& ObjectTransform) const {}
 
 #if DEBUG_MEMORY
 	static void CheckMemoryReleased();

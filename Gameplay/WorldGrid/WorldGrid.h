@@ -5,20 +5,17 @@
 #include <unordered_set>
 #include <vector>
 #include "Core/Core.h"
+#include "Gameplay/Gameplay.h"
 #include "Gameplay/HitResult.h"
 #include "Gameplay/WorldGrid/ObjectBucket.h"
 #include "Gameplay/WorldGrid/TileConstants.h"
 #include "Gameplay/WorldGrid/Tileset.h"
-#include "SFML/Graphics/Drawable.hpp"
 #include "Util/Rect.h"
 #include "Util/Vec2.h"
 
-class TilePatch;
-struct Tileset;
-
 // Spatial partition.
 
-class WorldGridCell : public sf::Drawable
+class WorldGridCell
 {
 public:
 	WorldGridCell(IntVec coords);
@@ -33,10 +30,9 @@ public:
 	HitResult CheckForSolidTile(IntRect rect) const;
 	HitResult CheckForSolidObject(IntRect rect, GameObject* ignore = nullptr) const;
 
-protected:
-	// Drawable
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	void GatherDraw(RenderManager& renderManager) const;
 
+protected:
 	IntVec PositionToTileXY(IntVec position) const;
 	IntVec ClampedPositionToTileXY(IntVec position) const;
 
@@ -51,7 +47,7 @@ protected:
 	ObjectBucket m_ObjectBucket;
 };
 
-class WorldGrid : public sf::Drawable
+class WorldGrid
 {
 public:
 	static IntVec PositionToCoords(IntVec worldPosition);
@@ -70,9 +66,11 @@ public:
 
 	HitResult CheckForSolid(IntRect rect, GameObject* ignore = nullptr) const;
 
+	void GatherDraw(RenderManager& renderManager, IntRect gatherRect) const;
+
 protected:
 	// Drawable
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	// The bool return value is "Keep looping?", so return false if you're all done.
 	void ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda);

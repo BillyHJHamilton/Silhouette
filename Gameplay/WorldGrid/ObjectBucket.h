@@ -12,7 +12,7 @@ class GameObject;
 // Contains game objects and controls their lifetime.
 // Provides methods to easily gather WeakRefs to objects in the bucket.
 
-class ObjectBucket : public sf::Drawable
+class ObjectBucket
 {
 public:
 	void AddObject(GameObject* newObject);
@@ -33,8 +33,8 @@ public:
 
 	ObjectRef FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore = nullptr) const;
 
-protected:
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	void GatherDraw(RenderManager& renderManager) const;
 
+protected:
 	std::vector<std::unique_ptr<GameObject>> m_ObjectList;
 };

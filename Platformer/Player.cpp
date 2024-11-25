@@ -2,30 +2,40 @@
 
 #include "App/GameApp.h"
 #include "App/PerfTimer.h"
+#include "Gameplay/Components/BoundsDrawComponent.h"
 #include "Gameplay/Components/CameraComponent.h"
 #include "Gameplay/Components/SpriteComponent.h"
 #include "Gameplay/World.h"
 #include "SFML/Window/Keyboard.hpp"
 #include "Util/Math.h"
 
+// Debug
+
 Player::Player(IntVec position) :
-	GameObject(IntRect(position, {15, 32}))
+	GameObject(IntRect(position, {26, 42}))
 {
 }
 
 void Player::Init()
 {
+	// Debug
+	//EmplaceComponent<BoundsDrawComponent>();
+
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(320,240));
 	m_CameraComponent->SetSpeed(2);
 	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
 
 	m_SpriteComponent = EmplaceComponent<SpriteComponent>("Player");
-	m_SpriteComponent->SetupSubimages({32,32}, {0,0}, 1, 4, 0);
-	m_SpriteComponent->m_Sprite.setPosition(ToFVec(8, 16));
-	m_SpriteComponent->m_Sprite.setOrigin(ToFVec(16, 16));
+	AnimStand();
+	m_SpriteComponent->CentreOriginAndAlignToBoundingBox(SpriteComponent::Alignment::BottomCentre);
+	m_SpriteComponent->EventAnimationEnd.AddDelegate(this, &Player::OnAnimationEnd);
+
+	// Tile grid doesn't match right now... Move player up
+	m_Bounds.top -= 10;
 
 	// Bounding box is smaller than sprite, so move over to centre us in the tile.
-	TryMoveX(8);
+	TryMoveX(9);
+	TryMoveY(2);
 
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 }
@@ -34,21 +44,30 @@ void Player::Tick(float deltaTime)
 {
 	PerfTimer timer(__FUNCTION__);
 
-	// Horizontal movement.
+	// Running
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		TryRun(-1.0f);
+		TryRun(-1);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		TryRun(1.0f);
+		TryRun(1);
 	}
 	else
 	{
 		TryStop();
 	}
 
-	TryMoveX(m_SpeedX);
+	// Horizontal movement
+	HitResult resultX = TryMoveX(m_SpeedX);
+	if (resultX.IsHit())
+	{
+		m_SpeedX = 0.0f;
+		if (m_AnimState == AnimState::Run)
+		{
+			AnimStand();
+		}
+	}
 
 	// Vertical movement
 	HitResult resultY = TryMoveY(m_SpeedY);
@@ -90,31 +109,46 @@ void Player::Tick(float deltaTime)
 		m_JumpFrames = 0;
 	}
 }
-void Player::TryRun(float facing)
+
+void Player::TryRun(int32 facing)
 {
-	// Add speed
-	if (m_SpeedX*facing < 0.0f)
+	// Abort if blocked
+	IntRect testRect = GetBounds();
+	testRect.left += facing;
+	if (GetWorld()->CheckForSolid(testRect).IsHit())
 	{
-		m_SpeedX += facing*c_RunDecel;
+		return;
 	}
-	else if (m_SpeedX*facing < c_RunSpeed)
+
+	const float fFacing = static_cast<float>(facing);
+
+	// Add speed
+	if (m_SpeedX*fFacing < 0.0f)
 	{
-		m_SpeedX += facing*c_RunAccel;
+		m_SpeedX += fFacing*c_RunDecel;
+	}
+	else if (m_SpeedX*fFacing < c_RunSpeed)
+	{
+		m_SpeedX += fFacing*c_RunAccel;
 	}
 
 	// Prevent overshooting
-	if (m_SpeedX*facing > c_RunSpeed)
+	if (m_SpeedX*fFacing > c_RunSpeed)
 	{
-		m_SpeedX = c_RunSpeed*facing;
+		m_SpeedX = c_RunSpeed*fFacing;
 	}
 
 	// Update sprite, camera, animation.
-	if (m_SpeedX*facing > 0.0f)
+	if (m_SpeedX*fFacing > 0.0f)
 	{
-		int32 intFacing = static_cast<int>(facing * (1.0f + Math::c_FloatEpsilon));
-		m_SpriteComponent->m_Sprite.setScale(FVec(facing,1.0f));
-		//m_CameraComponent->SetTargetOffset({intFacing*c_CameraOffsetX, -c_CameraOffsetY});
-		AnimRun();
+		m_SpriteComponent->m_Sprite.setScale(FVec(fFacing,1.0f));
+		//m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
+
+		if (m_AnimState != AnimState::Run && m_AnimState != AnimState::StartRun)
+		{
+			AnimStartRun();
+			//AnimRun();
+		}
 	}
 }
 
@@ -127,16 +161,11 @@ void Player::TryStop()
 		m_SpeedX = sign * std::max(0.0f, (oldSpeed - c_RunDecel));
 	}
 
+	AnimStand();
 	if (std::abs(m_SpeedX) < Math::c_FloatEpsilon)
 	{
 		m_SpeedX = 0.0f;
-		AnimStand();
 	}
-}
-
-void Player::OnPressJump()
-{
-	m_JumpPressedFrame = GetWorld()->GetTickNumber();
 }
 
 void Player::OnBlockedY(HitResult& hitResult)
@@ -190,6 +219,19 @@ bool Player::CheckOnGround() const
 	return GetWorld()->CheckForSolid(checkRect).IsHit();
 }
 
+void Player::OnPressJump()
+{
+	m_JumpPressedFrame = GetWorld()->GetTickNumber();
+}
+
+void Player::OnAnimationEnd()
+{
+	if (m_AnimState == AnimState::StartRun)
+	{
+		AnimRun();
+	}
+}
+
 //-----------------------------------------------------------------------------
 // Animations
 
@@ -197,8 +239,8 @@ void Player::AnimStand()
 {
 	if (m_AnimState != AnimState::Stand)
 	{
-		m_SpriteComponent->SetupSubimages({32,32}, {0,0}, 1, 1, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::None);
+		m_SpriteComponent->SetupSubimages({44,44}, {0,1}, 4, 4, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, false);
 		m_AnimState = AnimState::Stand;
 	}
 }
@@ -207,8 +249,18 @@ void Player::AnimRun()
 {
 	if (m_AnimState != AnimState::Run)
 	{
-		m_SpriteComponent->SetupSubimages({32,32}, {1,0}, 3, 3, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.15f, true);
+		m_SpriteComponent->SetupSubimages({44,44}, {0,0}, 6, 6, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, true);
 		m_AnimState = AnimState::Run;
+	}
+}
+
+void Player::AnimStartRun()
+{
+	if (m_AnimState != AnimState::StartRun)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {4,1}, 2, 2, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, true);
+		m_AnimState = AnimState::StartRun;
 	}
 }

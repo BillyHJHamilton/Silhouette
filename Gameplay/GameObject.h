@@ -3,11 +3,10 @@
 #include "Core/NameHash.h"
 #include "Gameplay.h"
 #include "Gameplay/HitResult.h"
-#include "SFML/Graphics/Drawable.hpp"
 #include "Util/Rect.h"
 #include "Util/Vec2.h"
 
-class GameObject : public sf::Drawable
+class GameObject
 {
 public:
 	GameObject(IntRect bounds);
@@ -22,6 +21,8 @@ public:
 	// Called on a framely basis while within the simulation area.
 	void GameObjectTick(float deltaTime);
 	virtual void Tick(float deltaTime) {}
+
+	virtual void GatherDraw(RenderManager& renderManager) const;
 
 	World* GetWorld() { return m_World; }
 	const World* GetWorld() const { return m_World; }
@@ -50,6 +51,7 @@ public:
 	IntRect GetBounds() const { return m_Bounds; }
 	IntVec GetTopLeft() const { return {m_Bounds.left, m_Bounds.top}; }
 	IntVec GetCentre() const { return {m_Bounds.left + m_Bounds.width/2, m_Bounds.top + m_Bounds.height/2}; }
+	IntVec GetBoundsSize() const { return {m_Bounds.width, m_Bounds.height}; }
 
 	// Move one pixel at a time.  Stops if blocked by something solid.
 	HitResult TryMoveX(int32 dx);
@@ -78,7 +80,7 @@ public:
 #endif
 
 protected:
-	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
+	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	RefTracker m_RefTracker;
 

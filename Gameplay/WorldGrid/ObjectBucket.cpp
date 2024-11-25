@@ -1,5 +1,6 @@
 #include "ObjectBucket.h"
 #include "Gameplay/GameObject.h"
+#include "Gameplay/RenderManager.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "Util/VectorUtil.h"
 
@@ -109,14 +110,13 @@ ObjectRef ObjectBucket::FindFirstHitByChannel(IntRect rect, NameHash channelName
 	return ObjectRef();
 }
 
-void ObjectBucket::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void ObjectBucket::GatherDraw(RenderManager& renderManager) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{
 		if (objectPtr)
 		{
-			target.draw(*objectPtr, states);
+			objectPtr->GatherDraw(renderManager);
 		}
 	}
 }
-

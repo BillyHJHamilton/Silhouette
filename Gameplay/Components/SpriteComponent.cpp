@@ -4,6 +4,7 @@
 #include "App/ShaderManager.h"
 #include "Core/TypeInfo.h"
 #include "Gameplay/GameObject.h"
+#include "Gameplay/RenderManager.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 
 #include "SFML/Graphics/Shader.hpp"
@@ -64,15 +65,70 @@ void SpriteComponent::Tick(float deltaTime)
 	}
 }
 
-void SpriteComponent::Draw(sf::RenderTarget& RenderTarget, const sf::RenderStates& renderStates) const
+void SpriteComponent::GatherDraw(RenderManager& renderManager, const sf::Transform& objectTransform) const
 {
 	if (m_Visible && m_Sprite.getTexture() != nullptr)
 	{
-		ShaderManager& shaderManager = GameApp::GetShaderManager();
-		shaderManager.SetNormalTransform(m_Sprite.getRotation(), m_Sprite.getScale());
-		RenderTarget.draw(m_Sprite, renderStates);
-		shaderManager.ClearNormalTransform();
+		renderManager.AddDrawable(m_RenderLayer, &m_Sprite, objectTransform, m_Sprite.getRotation(), m_Sprite.getScale());
 	}
+}
+
+IntVec SpriteComponent::GetSize() const
+{
+	if (m_Sprite.getTexture() == nullptr)
+	{
+		return {0,0};
+	}
+	else if (m_SubimagesEnabled)
+	{
+		return m_SubimageSize;
+	}
+	else
+	{
+		return IntVec(m_Sprite.getTexture()->getSize());
+	}
+}
+
+void SpriteComponent::CentreOrigin()
+{
+	m_Sprite.setOrigin(0.5f*ToFVec(GetSize()));
+}
+
+void SpriteComponent::CentreOriginAndAlignToBoundingBox(Alignment alignment)
+{
+	CentreOrigin();
+	IntVec ownerSize = GetOwner()->GetBoundsSize();
+	IntVec spriteSize = GetSize();
+
+	IntVec position;
+
+	if (alignment == Alignment::TopLeft || alignment == Alignment::LeftCentre || alignment == Alignment::BottomLeft)
+	{
+		position.x = spriteSize.x/2;
+	}
+	else if (alignment == Alignment::TopCentre || alignment == Alignment::Centre || alignment == Alignment::BottomCentre)
+	{
+		position.x = ownerSize.x/2;
+	}
+	else
+	{
+		position.x = ownerSize.x - spriteSize.x/2;
+	}
+
+	if (alignment == Alignment::TopLeft || alignment == Alignment::TopCentre || alignment == Alignment::TopRight)
+	{
+		position.y = spriteSize.y/2;
+	}
+	else if (alignment == Alignment::LeftCentre || alignment == Alignment::Centre || alignment == Alignment::RightCentre)
+	{
+		position.y = ownerSize.y/2;
+	}
+	else
+	{
+		position.y = ownerSize.y - spriteSize.y/2;
+	}
+
+	m_Sprite.setPosition(ToFVec(position));
 }
 
 // Todo: Could support backwards animation.
@@ -81,8 +137,16 @@ void SpriteComponent::AdvanceSubimage(int framesToAdvance)
 	m_CurrentSubimage += framesToAdvance;
 	while (m_CurrentSubimage >= m_NumSubimages)
 	{
+		if (m_AnimationLoop)
+		{
+			m_CurrentSubimage -= m_NumSubimages;
+		}
+		else
+		{
+			m_CurrentSubimage = std::max(m_NumSubimages - 1, 0);
+			m_AnimationRate = 0.0f;
+		}
 		EventAnimationEnd.Broadcast();
-		m_CurrentSubimage -= m_NumSubimages;
 	}
 }
 

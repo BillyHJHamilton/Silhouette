@@ -5,6 +5,7 @@
 #include "App/AssetManager.h"
 #include "App/PerfTimer.h"
 #include "Gameplay/GameObject.h"
+#include "Gameplay/RenderManager.h"
 #include "Gameplay/WorldGrid/TilePatch.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 #include "Util/MapUtil.h"
@@ -87,17 +88,16 @@ HitResult WorldGridCell::CheckForSolidObject(IntRect rect, GameObject* ignore) c
 	}
 }
 
-void WorldGridCell::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void WorldGridCell::GatherDraw(RenderManager& renderManager) const
 {
 	if (m_TilePatch)
 	{
-		// Tiles draw in patch space whereas objects draw in world space.
-		sf::RenderStates tileStates = states;
-		tileStates.transform.translate(ToFVec(m_Position));
-		target.draw(*m_TilePatch, tileStates);
+		sf::Transform transform;
+		transform.translate(ToFVec(m_Position));
+		renderManager.AddDrawable(RenderLayer::MainTiles_Lit, m_TilePatch.get(), transform);
 	}
 
-	target.draw(m_ObjectBucket, states);
+	m_ObjectBucket.GatherDraw(renderManager);
 }
 
 IntVec WorldGridCell::PositionToTileXY(IntVec tilePosition) const
@@ -285,13 +285,25 @@ HitResult WorldGrid::CheckForSolid(IntRect rect, GameObject* ignore) const
 	return result;
 }
 
-void WorldGrid::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void WorldGrid::GatherDraw(RenderManager& renderManager, sf::IntRect gatherRect) const
 {
-	for (auto& pair : m_CellMap)
+	PerfTimer timer(__FUNCTION__);
+
 	{
-		target.draw(pair.second, states);
+		// TODO: This should happen in light components
+		ShaderManager& shaderManager = GameApp::GetShaderManager();
+		shaderManager.AddPointLight( {100.0f, 100.0f}, {1.0f, 0.0f, 0.0f}, 300.0f);
+		shaderManager.AddPointLight( {300.0f, 150.0f}, {1.0f, 0.8f, 0.0f}, 300.0f);
+		shaderManager.AddPointLight( {700.0f, 300.0f}, {0.0f, 0.0f, 1.0f}, 400.0f);
 	}
-	target.draw(m_PersistentBucket, states);
+
+	ForEachCellInRect(gatherRect, [&renderManager](const WorldGridCell& cell)
+	{
+		cell.GatherDraw(renderManager);
+		return true; // continue iterating
+	});
+
+	m_PersistentBucket.GatherDraw(renderManager);
 }
 
 void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda)

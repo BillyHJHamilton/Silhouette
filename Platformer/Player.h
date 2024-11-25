@@ -14,8 +14,8 @@ public:
 	static constexpr int32 c_CameraOffsetX = 32;
 	static constexpr int32 c_CameraOffsetY = 32;
 
-	static constexpr float c_RunSpeed = 3.5f;
-	static constexpr float c_RunAccel = 0.2f;
+	static constexpr float c_RunSpeed = 6.0f;
+	static constexpr float c_RunAccel = 0.4f;
 	static constexpr float c_RunDecel = 0.4f;
 
 	static constexpr float c_JumpSpeed = 5.5f;
@@ -35,21 +35,24 @@ protected:
 	{
 		None,
 		Stand,
-		Run
+		Run,
+		StartRun
 	};
 	AnimState m_AnimState = AnimState::None;
 
-	void OnPressJump();
-
-	void TryRun(float facing);
+	void TryRun(int32 facing);
 	void TryStop();
 	void OnBlockedY(HitResult& hitResult);
 	bool TryCornerCorrection();
 
 	bool CheckOnGround() const;
 
+	void OnPressJump();
+	void OnAnimationEnd();
+
 	void AnimStand();
 	void AnimRun();
+	void AnimStartRun();
 
 	CameraComponent* m_CameraComponent = nullptr;
 	SpriteComponent* m_SpriteComponent = nullptr;

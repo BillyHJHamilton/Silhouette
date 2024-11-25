@@ -8,9 +8,13 @@ class Component;
 class GameObject;
 class GameSystem;
 class ObjectBucket;
+class RenderManager;
+class TilePatch;
 class World;
 class WorldGrid;
 class WorldGridCell;
+
+struct Tileset;
 
 using ObjectRef = WeakRef<GameObject>;
 using ObjectConstRef = WeakRef<const GameObject>;

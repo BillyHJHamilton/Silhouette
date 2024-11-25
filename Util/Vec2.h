@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include "Core/BasicTypes.h"
 #include "SFML/System/Vector2.hpp"
 
@@ -14,6 +15,10 @@ inline FVec ToFVec(int32 x, int32 y)
 inline FVec ToFVec(IntVec v)
 {
 	return FVec(static_cast<float>(v.x), static_cast<float>(v.y));
+}
+inline IntVec RoundToIntVec(FVec v)
+{
+	return IntVec(static_cast<int32>(lround(v.x)), static_cast<int32>(lround(v.y)));
 }
 
 // Support for unordered_map<IntVec>

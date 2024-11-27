@@ -37,6 +37,8 @@ public:
 	int32 GetTicksSince(int32 pastTick) const { return m_TickNumber - pastTick; }
 	int32 GetTicksUntil(int32 futureTick) const { return futureTick - m_TickNumber; }
 
+	double GetWorldTime() const { return m_WorldTime; }
+
 	static constexpr int32 c_InvalidFrame = -999;
 
 protected:
@@ -45,8 +47,9 @@ protected:
 
 	sf::View m_MainView;
 
-	// Counter incremented at end of each world tick.
+	// Counters incremented at end of each world tick.
 	int32 m_TickNumber = 0;
+	double m_WorldTime = 0.0;
 
 	// List of other singletons managed by World.h.  Automatically instantiated when requested.
 	// Generally speaking, if the object is used in World.cpp, it should be a unique_ptr like WorldGrid.

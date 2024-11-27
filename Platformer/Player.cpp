@@ -5,6 +5,7 @@
 #include "Gameplay/Components/BoundsDrawComponent.h"
 #include "Gameplay/Components/CameraComponent.h"
 #include "Gameplay/Components/SpriteComponent.h"
+#include "Gameplay/Components/PointLightComponent.h"
 #include "Gameplay/World.h"
 #include "SFML/Window/Keyboard.hpp"
 #include "Util/Math.h"
@@ -20,6 +21,11 @@ void Player::Init()
 {
 	// Debug
 	//EmplaceComponent<BoundsDrawComponent>();
+
+	//m_DebugLight = EmplaceComponent<PointLightComponent>();
+	//m_DebugLight->SetColour({1.0f, 0.0f, 0.0f});
+	//m_DebugLight->SetOffset({50, 5});
+	//m_DebugLight->SetRadius(100.0f);
 
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(320,240));
 	m_CameraComponent->SetSpeed(2);

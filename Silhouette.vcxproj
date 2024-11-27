@@ -140,7 +140,9 @@
     <ClCompile Include="App\PerfTimer.cpp" />
     <ClCompile Include="Gameplay\Components\BoundsDrawComponent.cpp" />
     <ClCompile Include="Gameplay\Components\CameraComponent.cpp" />
+    <ClCompile Include="Gameplay\Components\PointLightComponent.cpp" />
     <ClCompile Include="Gameplay\RenderManager.cpp" />
+    <ClCompile Include="Platformer\Lights\StrobeLight.cpp" />
     <ClCompile Include="Platformer\Main.cpp" />
     <ClCompile Include="App\ShaderManager.cpp" />
     <ClCompile Include="Core\Event.cpp" />
@@ -182,6 +184,7 @@
     <ClInclude Include="Gameplay\Component.h" />
     <ClInclude Include="Gameplay\Components\BoundsDrawComponent.h" />
     <ClInclude Include="Gameplay\Components\CameraComponent.h" />
+    <ClInclude Include="Gameplay\Components\PointLightComponent.h" />
     <ClInclude Include="Gameplay\Components\SpriteComponent.h" />
     <ClInclude Include="Gameplay\GameObject.h" />
     <ClInclude Include="Gameplay\Gameplay.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="Gameplay\WorldGrid\TileConstants.h" />
     <ClInclude Include="Gameplay\World.h" />
     <ClInclude Include="Gameplay\WorldGrid\WorldGrid.h" />
+    <ClInclude Include="Platformer\Lights\StrobeLight.h" />
     <ClInclude Include="Platformer\PlatformerApp.h" />
     <ClInclude Include="Platformer\Player.h" />
     <ClInclude Include="Platformer\SpawnByName.h" />

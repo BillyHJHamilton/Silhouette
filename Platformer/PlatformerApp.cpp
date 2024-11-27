@@ -8,8 +8,9 @@
 
 void PlatformerApp::StartupLoadAssets()
 {
-	m_AssetManager.LoadTexture("Tileset", "Resources/Textures/MiniTileset.png");
+	m_AssetManager.LoadTexture("Tileset", "Resources/Textures/Tiles1.png");
 	m_AssetManager.LoadTexture("Player", "Resources/Textures/BalletSheet.png");
+	m_AssetManager.LoadTexture("Objects1x1", "Resources/Textures/Objects1x1.png");
 	m_ShaderManager.LoadShaders();
 }
 
@@ -17,7 +18,7 @@ void PlatformerApp::StartupInit()
 {
 	{
 		TmxParser tmxParser;
-		tmxParser.LoadMapFromTmx("Resources/Maps/Map1.tmx", "Resources/Maps/", m_World);
+		tmxParser.LoadMapFromTmx("Resources/Maps/Map2.tmx", "Resources/Maps/", m_World);
 	}
 	m_World.Init();
 	m_CurrentWorld = &m_World;

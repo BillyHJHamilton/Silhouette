@@ -8,6 +8,9 @@ namespace Math
 {
 	static constexpr float c_FloatEpsilon = 0.001f;
 
+	static constexpr double c_Pi = 3.14159265358979323846;
+	static constexpr double c_TwoPi = 2.0 * c_Pi;
+
 	inline int32 Sign(int32 x)
 	{
 		return (x > 0) ? 1 : (x == 0) ? 0 : -1;

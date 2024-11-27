@@ -2,6 +2,7 @@
 #include "Gameplay/GameObject.h"
 #include "Gameplay/World.h"
 #include "Platformer/Player.h"
+#include "Platformer/Lights/StrobeLight.h"
 
 void SpawnByName(World& world, NameHash name, IntVec position)
 {
@@ -10,6 +11,11 @@ void SpawnByName(World& world, NameHash name, IntVec position)
 		case NameHash::StaticHash("Player"):
 		{
 			world.AddObject(new Player(position));
+			break;
+		}
+		case NameHash::StaticHash("StrobeLight"):
+		{
+			world.AddObject(new StrobeLight(position));
 			break;
 		}
 		default:

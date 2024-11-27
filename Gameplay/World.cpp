@@ -24,11 +24,15 @@ void World::Tick(float deltaTime)
 {
 	PerfTimer timer(__FUNCTION__);
 
-	// Tick game objects
-	IntRect tickArea(0, 0, 640, 480); // TODO
-	m_WorldGrid->TickObjects(deltaTime, tickArea);
+	// Tick an area around the main view.
+	const IntVec tickTopLeft = RoundToIntVec(m_MainView.getCenter() - 1.5f*m_MainView.getSize());
+	const IntVec tickSize = RoundToIntVec(3.0f * m_MainView.getSize());
+	const IntRect tickRect(tickTopLeft, tickSize);
+
+	m_WorldGrid->TickObjects(deltaTime, tickRect);
 
 	++m_TickNumber;
+	m_WorldTime += deltaTime;
 }
 
 void World::Draw(sf::RenderTarget& renderTarget) const
@@ -37,10 +41,10 @@ void World::Draw(sf::RenderTarget& renderTarget) const
 	const FVec viewTopLeft = m_MainView.getCenter() - 0.5f*m_MainView.getSize();
 	const IntVec drawTopLeft = RoundToIntVec(viewTopLeft - 0.5f*ToFVec(c_PatchWidth, c_PatchHeight));
 	const IntVec drawSize = RoundToIntVec(m_MainView.getSize()) + 2*IntVec(c_PatchWidth, c_PatchHeight);
-	const IntRect m_DrawRect(drawTopLeft, drawSize);
+	const IntRect drawRect(drawTopLeft, drawSize);
 
 	renderTarget.setView(m_MainView);
-	m_WorldGrid->GatherDraw(*m_RenderManager, m_DrawRect);
+	m_WorldGrid->GatherDraw(*m_RenderManager, drawRect);
 	m_RenderManager->DrawAll(renderTarget);
 }
 

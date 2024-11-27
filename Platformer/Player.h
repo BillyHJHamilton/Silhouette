@@ -3,6 +3,7 @@
 #include "Gameplay/GameObject.h"
 
 class CameraComponent;
+class PointLightComponent;
 class SpriteComponent;
 
 class Player : public GameObject
@@ -18,7 +19,7 @@ public:
 	static constexpr float c_RunAccel = 0.4f;
 	static constexpr float c_RunDecel = 0.4f;
 
-	static constexpr float c_JumpSpeed = 5.5f;
+	static constexpr float c_JumpSpeed = 7.0f;
 	static constexpr float c_JumpGravity = 0.25f;
 	static constexpr float c_Gravity = 0.5f;
 	static constexpr int32 c_MaxJumpFrames = 10;
@@ -57,6 +58,7 @@ protected:
 	void AnimStartRun();
 
 	CameraComponent* m_CameraComponent = nullptr;
+	PointLightComponent* m_DebugLight = nullptr;
 	SpriteComponent* m_SpriteComponent = nullptr;
 
 	float m_SpeedX = 0.0f;

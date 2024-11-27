@@ -187,7 +187,7 @@ void WorldGrid::BuildVertexArrays()
 	// Todo: Probably something more reasonable about tilesets and textures.
 	AssetManager& AssetManager = GameApp::GetAssetManager();
 	m_Tileset.m_Texture = AssetManager.FindTexture("Tileset");
-	m_Tileset.m_TilesPerRow = 2;
+	m_Tileset.m_TilesPerRow = 20; // TODO this should really come from the tiled map
 
 	for (auto& pair : m_CellMap)
 	{
@@ -293,10 +293,10 @@ void WorldGrid::GatherDraw(RenderManager& renderManager, sf::IntRect gatherRect)
 
 	{
 		// TODO: This should happen in light components
-		ShaderManager& shaderManager = GameApp::GetShaderManager();
-		shaderManager.AddPointLight( {100.0f, 100.0f}, {1.0f, 0.0f, 0.0f}, 300.0f);
-		shaderManager.AddPointLight( {300.0f, 150.0f}, {1.0f, 0.8f, 0.0f}, 300.0f);
-		shaderManager.AddPointLight( {700.0f, 300.0f}, {0.0f, 0.0f, 1.0f}, 400.0f);
+		//ShaderManager& shaderManager = GameApp::GetShaderManager();
+		//shaderManager.AddPointLight( {100.0f, 100.0f}, {1.0f, 0.0f, 0.0f}, 300.0f);
+		//shaderManager.AddPointLight( {300.0f, 150.0f}, {1.0f, 0.8f, 0.0f}, 300.0f);
+		//shaderManager.AddPointLight( {700.0f, 300.0f}, {0.0f, 0.0f, 1.0f}, 400.0f);
 	}
 
 	ForEachCellInRect(gatherRect, [&renderManager](const WorldGridCell& cell)

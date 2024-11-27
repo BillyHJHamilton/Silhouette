@@ -5,8 +5,8 @@
 
 static constexpr int32 c_InvalidTile = -1;
 
-static constexpr int32 c_TileWidth = 16;
-static constexpr int32 c_TileHeight = 16;
+static constexpr int32 c_TileWidth = 26;
+static constexpr int32 c_TileHeight = 22;
 
 static constexpr int32 c_PatchTiles = 20; // In each dimension
 

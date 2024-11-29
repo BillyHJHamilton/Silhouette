@@ -15,7 +15,7 @@ public:
 	Player(IntVec position);
 	WeakRef<Player> GetWeakPlayer() { return m_RefTracker.MakeReference(this); }
 
-	static constexpr sf::Keyboard::Key c_JumpKey = sf::Keyboard::Key::Space;
+	static constexpr sf::Keyboard::Key c_JumpKey = sf::Keyboard::Key::LControl;
 	static constexpr uint32 c_JumpButtonId = 3;
 
 	static constexpr int32 c_CameraOffsetX = 0;

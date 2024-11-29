@@ -1,5 +1,7 @@
 #include "InputEventManager.h"
 
+#include <cmath>
+
 MulticastEvent<>& InputEventManager::GetKeyPressedEvent(sf::Keyboard::Key key)
 {
 	return m_KeyPressedEventList[key];
@@ -55,7 +57,9 @@ void InputEventManager::HandleButtonPressed(sf::Event::JoystickButtonEvent const
 	if (buttonEvent.button >= 0 &&
 		buttonEvent.button < sf::Joystick::ButtonCount)
 	{
+		m_LastJoystickId = buttonEvent.joystickId;
 		m_ButtonPressedEventList[buttonEvent.button].Broadcast();
+		m_AnyButtonPressedEvent.Broadcast(buttonEvent.button);
 	}
 }
 
@@ -65,7 +69,21 @@ void InputEventManager::HandleButtonReleased(sf::Event::JoystickButtonEvent cons
 		buttonEvent.button < sf::Joystick::ButtonCount)
 	{
 		m_ButtonReleasedEventList[buttonEvent.button].Broadcast();
+		m_AnyButtonReleasedEvent.Broadcast(buttonEvent.button);
 	}
+}
+
+void InputEventManager::HandleJoystickMoved(sf::Event::JoystickMoveEvent const& moveEvent)
+{
+	if (std::abs(moveEvent.position > 1.0f))
+	{
+		m_LastJoystickId = moveEvent.joystickId;
+	}
+}
+
+float InputEventManager::GetAxis(sf::Joystick::Axis axis) const
+{
+	return sf::Joystick::getAxisPosition(m_LastJoystickId, axis);
 }
 
 sf::Event::KeyEvent const& InputEventManager::GetEventDetails()

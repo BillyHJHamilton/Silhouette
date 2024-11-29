@@ -66,14 +66,16 @@ void Player::Tick(float deltaTime)
 {
 	PerfTimer timer(__FUNCTION__);
 
+	const InputEventManager& inputManager = GameApp::GetInputEventManager();
+
 	// Running
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-		sf::Joystick::getAxisPosition(0,sf::Joystick::Axis::X) < -c_JoystickDeadZone)
+		inputManager.GetAxis(sf::Joystick::Axis::X) < -c_JoystickDeadZone)
 	{
 		TryRun(-1);
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-		sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X) > c_JoystickDeadZone)
+		inputManager.GetAxis(sf::Joystick::Axis::X) > c_JoystickDeadZone)
 	{
 		TryRun(1);
 	}

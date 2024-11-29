@@ -179,6 +179,10 @@ void GameApp::AppHandleEvents()
 			case sf::Event::JoystickButtonReleased:
 				m_InputEventManager.HandleButtonReleased(nextEvent.joystickButton);
 				break;
+
+			case sf::Event::JoystickMoved:
+				m_InputEventManager.HandleJoystickMoved(nextEvent.joystickMove);
+				break;
 		}
 	}
 }

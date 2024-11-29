@@ -23,6 +23,10 @@ public:
 
 	void HandleButtonPressed(sf::Event::JoystickButtonEvent const& buttonEvent);
 	void HandleButtonReleased(sf::Event::JoystickButtonEvent const& buttonEvent);
+	void HandleJoystickMoved(sf::Event::JoystickMoveEvent const& moveEvent);
+
+	// Get axis from the most recently used joystick.
+	float GetAxis(sf::Joystick::Axis axis) const;
 
 	// If you want to know about modifier keys for the current key event, you can retrieve them like this.
 	sf::Event::KeyEvent const& GetEventDetails();
@@ -36,4 +40,6 @@ private:
 	std::array<MulticastEvent<>,sf::Joystick::ButtonCount> m_ButtonReleasedEventList;
 	MulticastEvent<uint32> m_AnyButtonPressedEvent;
 	MulticastEvent<uint32> m_AnyButtonReleasedEvent;
+
+	uint32 m_LastJoystickId = 0;
 };

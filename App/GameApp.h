@@ -52,8 +52,9 @@ protected:
 	sf::Clock m_Clock;
 
 	bool m_IsFullscreen;
-
+	
 	float m_FixedFPS = 60.0f;
+	//float m_FixedFPS = 10.0f;
 	float m_LastTick = 0.0f;
 
 	AssetManager m_AssetManager;

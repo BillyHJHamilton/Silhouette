@@ -83,9 +83,9 @@ void GameApp::ShutdownCleanup()
 
 void GameApp::CreateWindow()
 {
-	m_MainWindow.create(sf::VideoMode(640, 480), "Silhouette");
+	m_MainWindow.create(sf::VideoMode(768, 576), "Silhouette");
 	m_MainWindow.setKeyRepeatEnabled(false);
-	m_MainWindow.setVerticalSyncEnabled(true);
+	//m_MainWindow.setVerticalSyncEnabled(true);
 	m_MainWindow.setFramerateLimit(0);
 	m_IsFullscreen = false;
 }
@@ -94,7 +94,7 @@ void GameApp::CreateWindowFullscreen()
 {
 	m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
 	m_MainWindow.setKeyRepeatEnabled(false);
-	m_MainWindow.setVerticalSyncEnabled(true);
+	//m_MainWindow.setVerticalSyncEnabled(true);
 	m_MainWindow.setFramerateLimit(0);
 	m_IsFullscreen = true;
 }
@@ -178,7 +178,7 @@ void GameApp::AppHandleEvents()
 void GameApp::AppTick(float deltaTime)
 {
 	{
-		PerfTimer timer("VSync");
+		//PerfTimer timer("VSync");
 		m_ShaderManager.ClearLights();
 		m_ShaderManager.ClearNormalTransform();
 	}

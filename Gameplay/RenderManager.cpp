@@ -51,6 +51,4 @@ void RenderManager::DrawAll(sf::RenderTarget& target)
 
 		m_RenderList[layer].clear();
 	}
-
-	shaderManager.ClearLights();
 }

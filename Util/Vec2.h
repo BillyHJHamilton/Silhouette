@@ -20,6 +20,10 @@ inline IntVec RoundToIntVec(FVec v)
 {
 	return IntVec(static_cast<int32>(lround(v.x)), static_cast<int32>(lround(v.y)));
 }
+inline IntVec TruncateToIntVec(FVec v)
+{
+	return IntVec(static_cast<int32>(v.x), static_cast<int32>(v.y));
+}
 
 // Support for unordered_map<IntVec>
 namespace std

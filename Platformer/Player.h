@@ -12,8 +12,8 @@ public:
 	Player(IntVec position);
 	WeakRef<Player> GetWeakPlayer() { return m_RefTracker.MakeReference(this); }
 
-	static constexpr int32 c_CameraOffsetX = 32;
-	static constexpr int32 c_CameraOffsetY = 32;
+	static constexpr int32 c_CameraOffsetX = 0;
+	static constexpr int32 c_CameraOffsetY = 22;
 
 	static constexpr float c_RunSpeed = 6.0f;
 	static constexpr float c_RunAccel = 0.4f;

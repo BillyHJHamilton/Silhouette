@@ -28,8 +28,7 @@ void Player::Init()
 	m_DebugLight->SetRadius(100.0f);
 	m_DebugLight->SetEnabled(false);
 
-	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(320,240));
-	m_CameraComponent->SetSpeed(2);
+	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
 	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
 
 	m_SpriteComponent = EmplaceComponent<SpriteComponent>("Player");
@@ -41,8 +40,9 @@ void Player::Init()
 	m_Bounds.top -= 10;
 
 	// Bounding box is smaller than sprite, so move over to centre us in the tile.
+	// And move us down to the ground.
 	TryMoveX(9);
-	TryMoveY(2);
+	TryMoveY(20);
 
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
@@ -166,7 +166,7 @@ void Player::TryRun(int32 facing)
 	if (m_SpeedX*fFacing > 0.0f)
 	{
 		m_SpriteComponent->m_Sprite.setScale(FVec(fFacing,1.0f));
-		//m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
+		m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
 
 		if (m_OnGround && m_AnimState != AnimState::Run && m_AnimState != AnimState::RunStart)
 		{

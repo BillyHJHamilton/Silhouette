@@ -16,6 +16,11 @@ namespace Math
 		return (x > 0) ? 1 : (x == 0) ? 0 : -1;
 	}
 
+	inline float FloatSign(int32 x)
+	{
+		return (x > 0) ? 1.0f : (x == 0) ? 0.0f : -1.0f;
+	}
+
 	inline float Sign(float x)
 	{
 		return (x > c_FloatEpsilon) ? 1.0f : (x < -c_FloatEpsilon) ? -1.0f : 0.0f;
@@ -24,6 +29,36 @@ namespace Math
 	inline int32 IntSign(float x)
 	{
 		return (x > c_FloatEpsilon) ? 1 : (x < -c_FloatEpsilon) ? -1 : 0;
+	}
+
+	inline bool FloatIsZero(float x)
+	{
+		return abs(x) < c_FloatEpsilon;
+	}
+
+	inline bool FloatNearlyZero(float x, float tolerance)
+	{
+		return abs(x) < tolerance;
+	}
+
+	inline bool FloatEquals(float a, float b)
+	{
+		return abs(a - b) < c_FloatEpsilon;
+	}
+
+	inline bool FloatNearlyEquals(float a, float b, float tolerance)
+	{
+		return abs(a - b) < tolerance;
+	}
+
+	inline bool FloatLessOrEqual(float a, float b)
+	{
+		return a < b + c_FloatEpsilon;
+	}
+
+	inline bool FloatGreaterOrEqual(float a, float b)
+	{
+		return a > b - c_FloatEpsilon;
 	}
 
 	template<typename T>

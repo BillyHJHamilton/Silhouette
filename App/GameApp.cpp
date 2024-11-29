@@ -171,6 +171,14 @@ void GameApp::AppHandleEvents()
 			case sf::Event::KeyReleased:
 				m_InputEventManager.HandleKeyReleased(nextEvent.key);
 				break;
+
+			case sf::Event::JoystickButtonPressed:
+				m_InputEventManager.HandleButtonPressed(nextEvent.joystickButton);
+				break;
+
+			case sf::Event::JoystickButtonReleased:
+				m_InputEventManager.HandleButtonReleased(nextEvent.joystickButton);
+				break;
 		}
 	}
 }

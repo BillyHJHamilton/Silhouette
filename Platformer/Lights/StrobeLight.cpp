@@ -22,8 +22,9 @@ void StrobeLight::Init()
 	m_UnlitSprite = EmplaceComponent<SpriteComponent>("Objects1x1");
 	m_UnlitSprite->SetLayer(RenderLayer::BackObjects_Unlit);
 
+	// Some weird numbers for deterministic but irregular behaviour.
 	m_StrobeOffset = static_cast<float>(m_Bounds.left) / 253.7f - static_cast<float>(m_Bounds.top) / 634.2f;
-	m_StrobePeriod = c_BaseStrobePeriod * 0.8 + (0.2 * std::fmod(m_Bounds.left/551.1f + m_Bounds.top/115.6f, 1.0f));
+	m_StrobePeriod = c_BaseStrobePeriod * 0.8f + (0.2f * std::fmod(m_Bounds.left/551.1f + m_Bounds.top/115.6f, 1.0f));
 }
 
 void StrobeLight::Tick(float deltaTime)

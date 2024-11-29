@@ -20,11 +20,11 @@ public:
 	static constexpr float c_RunDecel = 0.4f;
 
 	static constexpr float c_JumpSpeed = 7.0f;
-	static constexpr float c_JumpGravity = 0.25f;
-	static constexpr float c_Gravity = 0.5f;
-	static constexpr int32 c_MaxJumpFrames = 10;
+	static constexpr float c_JumpGravity = 0.15f;
+	static constexpr float c_Gravity = 0.4f;
+	static constexpr int32 c_MaxJumpFrames = 14;
 
-	static constexpr int32 c_MaxCornerCorrection = 3;
+	static constexpr int32 c_MaxCornerCorrection = 6;
 	static constexpr int32 c_MaxJumpDelay = 5;
 
 	virtual void Init() override;
@@ -39,7 +39,9 @@ protected:
 		None,
 		Stand,
 		Run,
-		StartRun
+		RunStart,
+		StandingJumpStart,
+		StandingJumpFall
 	};
 	AnimState m_AnimState = AnimState::None;
 
@@ -51,11 +53,14 @@ protected:
 	bool CheckOnGround() const;
 
 	void OnPressJump();
+	void OnPressL();
 	void OnAnimationEnd();
 
 	void AnimStand();
 	void AnimRun();
-	void AnimStartRun();
+	void AnimRunStart();
+	void AnimStandingJumpStart();
+	void AnimStandingJumpFall();
 
 	CameraComponent* m_CameraComponent = nullptr;
 	PointLightComponent* m_DebugLight = nullptr;

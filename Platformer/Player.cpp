@@ -22,10 +22,11 @@ void Player::Init()
 	// Debug
 	//EmplaceComponent<BoundsDrawComponent>();
 
-	//m_DebugLight = EmplaceComponent<PointLightComponent>();
-	//m_DebugLight->SetColour({1.0f, 0.0f, 0.0f});
-	//m_DebugLight->SetOffset({50, 5});
-	//m_DebugLight->SetRadius(100.0f);
+	m_DebugLight = EmplaceComponent<PointLightComponent>();
+	m_DebugLight->SetColour({1.0f, 0.0f, 0.0f});
+	m_DebugLight->SetOffset({50, 5});
+	m_DebugLight->SetRadius(100.0f);
+	m_DebugLight->SetEnabled(false);
 
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(320,240));
 	m_CameraComponent->SetSpeed(2);
@@ -44,6 +45,7 @@ void Player::Init()
 	TryMoveY(2);
 
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
+	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
 }
 
 void Player::Tick(float deltaTime)
@@ -101,6 +103,8 @@ void Player::Tick(float deltaTime)
 		m_IsJumping = true;
 		m_JumpPressedFrame = World::c_InvalidFrame; // Don't jump twice from one input.
 		m_SpeedY = -c_JumpSpeed;
+
+		AnimStandingJumpStart();
 	}
 	else if (m_IsJumping && bHoldingJump && m_JumpFrames > 0)
 	{
@@ -111,9 +115,23 @@ void Player::Tick(float deltaTime)
 	else if (!m_OnGround)
 	{
 		// Normal gravity
-		m_SpeedY += c_JumpGravity;
+		m_SpeedY += c_Gravity;
 		m_JumpFrames = 0;
+
+		if (m_SpeedY > 1.0f)
+		{
+			AnimStandingJumpFall();
+		}
 	}
+
+/*	if (m_OnGround)
+	{
+		m_DebugLight->SetColour(0.0f,1.0f,0.0f);
+	}
+	else
+	{
+		m_DebugLight->SetColour(1.0f,0.0f,0.0f);
+	}*/
 }
 
 void Player::TryRun(int32 facing)
@@ -150,10 +168,9 @@ void Player::TryRun(int32 facing)
 		m_SpriteComponent->m_Sprite.setScale(FVec(fFacing,1.0f));
 		//m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
 
-		if (m_AnimState != AnimState::Run && m_AnimState != AnimState::StartRun)
+		if (m_OnGround && m_AnimState != AnimState::Run && m_AnimState != AnimState::RunStart)
 		{
-			AnimStartRun();
-			//AnimRun();
+			AnimRunStart();
 		}
 	}
 }
@@ -167,7 +184,11 @@ void Player::TryStop()
 		m_SpeedX = sign * std::max(0.0f, (oldSpeed - c_RunDecel));
 	}
 
-	AnimStand();
+	if (m_OnGround)
+	{
+		AnimStand();
+	}
+
 	if (std::abs(m_SpeedX) < Math::c_FloatEpsilon)
 	{
 		m_SpeedX = 0.0f;
@@ -181,7 +202,8 @@ void Player::OnBlockedY(HitResult& hitResult)
 	// Corner correction
 	if (bGoingUp)
 	{
-		if (TryCornerCorrection())
+		const bool bSuccess = TryCornerCorrection();
+		if (bSuccess)
 		{
 			return;
 		}
@@ -221,7 +243,7 @@ bool Player::TryCornerCorrection()
 
 bool Player::CheckOnGround() const
 {
-	IntRect checkRect(m_Bounds.left + 2, m_Bounds.top + m_Bounds.height, m_Bounds.width - 4, 1);
+	IntRect checkRect(m_Bounds.left, m_Bounds.top + m_Bounds.height, m_Bounds.width, 1);
 	return GetWorld()->CheckForSolid(checkRect).IsHit();
 }
 
@@ -230,9 +252,14 @@ void Player::OnPressJump()
 	m_JumpPressedFrame = GetWorld()->GetTickNumber();
 }
 
+void Player::OnPressL()
+{
+	m_DebugLight->ToggleEnabled();
+}
+
 void Player::OnAnimationEnd()
 {
-	if (m_AnimState == AnimState::StartRun)
+	if (m_AnimState == AnimState::RunStart)
 	{
 		AnimRun();
 	}
@@ -243,10 +270,17 @@ void Player::OnAnimationEnd()
 
 void Player::AnimStand()
 {
-	if (m_AnimState != AnimState::Stand)
+	// Special stop transition
+	if (m_AnimState == AnimState::Run || m_AnimState == AnimState::RunStart)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {0,1}, 4, 4, 0);
 		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, false);
+		m_AnimState = AnimState::Stand;
+	}
+	else if (m_AnimState != AnimState::Stand)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {3,1}, 1, 1, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::None);
 		m_AnimState = AnimState::Stand;
 	}
 }
@@ -261,12 +295,32 @@ void Player::AnimRun()
 	}
 }
 
-void Player::AnimStartRun()
+void Player::AnimRunStart()
 {
-	if (m_AnimState != AnimState::StartRun)
+	if (m_AnimState != AnimState::RunStart)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {4,1}, 2, 2, 0);
 		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, true);
-		m_AnimState = AnimState::StartRun;
+		m_AnimState = AnimState::RunStart;
+	}
+}
+
+void Player::AnimStandingJumpStart()
+{
+	if (m_AnimState != AnimState::StandingJumpStart)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {0,2}, 2, 2, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, false);
+		m_AnimState = AnimState::StandingJumpStart;
+	}
+}
+
+void Player::AnimStandingJumpFall()
+{
+	if (m_AnimState != AnimState::StandingJumpFall)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {2,2}, 1, 1, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::None);
+		m_AnimState = AnimState::StandingJumpFall;
 	}
 }

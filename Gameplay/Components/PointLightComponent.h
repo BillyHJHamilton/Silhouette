@@ -17,6 +17,7 @@ public:
 	void SetRadius(float radius) { m_Radius = radius; }
 	void SetOffset(IntVec vec) { m_Offset = vec; }
 	void SetEnabled(bool enabled) { m_Enabled = enabled; }
+	void ToggleEnabled() { m_Enabled = !m_Enabled; }
 
 private:
 	sf::Vector3f m_Colour = {1.0f, 1.0f, 1.0f};

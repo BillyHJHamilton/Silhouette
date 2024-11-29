@@ -85,7 +85,7 @@ void GameApp::CreateWindow()
 {
 	m_MainWindow.create(sf::VideoMode(768, 576), "Silhouette");
 	m_MainWindow.setKeyRepeatEnabled(false);
-	//m_MainWindow.setVerticalSyncEnabled(true);
+	m_MainWindow.setVerticalSyncEnabled(true);
 	m_MainWindow.setFramerateLimit(0);
 	m_IsFullscreen = false;
 }
@@ -94,7 +94,7 @@ void GameApp::CreateWindowFullscreen()
 {
 	m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
 	m_MainWindow.setKeyRepeatEnabled(false);
-	//m_MainWindow.setVerticalSyncEnabled(true);
+	m_MainWindow.setVerticalSyncEnabled(true);
 	m_MainWindow.setFramerateLimit(0);
 	m_IsFullscreen = true;
 }

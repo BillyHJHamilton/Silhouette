@@ -12,6 +12,9 @@
 #include "Util/Math.h"
 
 //-----------------------------------------------------------------------------
+// TEST
+#include "App/ShaderManager.h"
+//-----------------------------------------------------------------------------
 
 #pragma region WorldGridCell
 
@@ -235,6 +238,10 @@ void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 	PerfTimer timer(__FUNCTION__);
 	assert(m_TickList.empty());
 
+	// TODO: This should happen in light components
+	//ShaderManager& shaderManager = GameApp::GetShaderManager();
+	//shaderManager.AddAreaLight({ 0.0f, 0.0f, 1000.0f, 1000.0f }, {100.0f, 200.0f}, { 0.0f, -1.0f }, { 0.5f, 0.0f, 0.0f });
+
 	ForEachCellInRect(tickArea,
 		[this](WorldGridCell& cell)
 		{
@@ -290,14 +297,6 @@ HitResult WorldGrid::CheckForSolid(IntRect rect, GameObject* ignore) const
 void WorldGrid::GatherDraw(RenderManager& renderManager, sf::IntRect gatherRect) const
 {
 	PerfTimer timer(__FUNCTION__);
-
-	{
-		// TODO: This should happen in light components
-		//ShaderManager& shaderManager = GameApp::GetShaderManager();
-		//shaderManager.AddPointLight( {100.0f, 100.0f}, {1.0f, 0.0f, 0.0f}, 300.0f);
-		//shaderManager.AddPointLight( {300.0f, 150.0f}, {1.0f, 0.8f, 0.0f}, 300.0f);
-		//shaderManager.AddPointLight( {700.0f, 300.0f}, {0.0f, 0.0f, 1.0f}, 400.0f);
-	}
 
 	ForEachCellInRect(gatherRect, [&renderManager](const WorldGridCell& cell)
 	{

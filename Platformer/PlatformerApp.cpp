@@ -11,6 +11,9 @@ void PlatformerApp::StartupLoadAssets()
 	m_AssetManager.LoadTexture("Tileset", "Resources/Textures/Tiles1.png");
 	m_AssetManager.LoadTexture("Player", "Resources/Textures/BalletSheet.png");
 	m_AssetManager.LoadTexture("Objects1x1", "Resources/Textures/Objects1x1.png");
+
+	m_AssetManager.LoadFont("FixedFont", "Resources/Fonts/FSEX302.ttf");
+
 	m_ShaderManager.LoadShaders();
 }
 

@@ -3,7 +3,7 @@
 #include "Core/Event.h"
 #include "Core/TypeInfo.h"
 #include "Gameplay/Component.h"
-#include "Gameplay/RenderManager.h"
+#include "Gameplay/RenderLayer.h"
 #include "SFML/Graphics/Sprite.hpp"
 #include "Util/Vec2.h"
 #include "Util/Rect.h"

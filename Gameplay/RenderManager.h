@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include "Core/BasicTypes.h"
+#include "Gameplay/RenderLayer.h"
 #include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/Transformable.hpp"
 #include "Util/Vec2.h"
@@ -12,28 +13,6 @@ namespace sf
 	class Drawable;
 	class RenderTarget;
 }
-
-struct RenderLayer
-{
-	enum Enum
-	{
-		FirstLayer = 0,
-
-		BackTiles_Lit = FirstLayer,
-		MainTiles_Lit,
-		BackObjects_Unlit,
-		MainObjects_Lit,
-		FrontEffects_Unlit,
-
-		Count
-	};
-
-	static bool IsLit(Enum layer)
-	{
-		return layer != BackObjects_Unlit
-			&& layer != FrontEffects_Unlit;
-	}
-};
 
 // Used by World to gather renderable objects into layers before drawing.
 class RenderManager

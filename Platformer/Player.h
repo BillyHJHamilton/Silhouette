@@ -5,6 +5,7 @@
 class CameraComponent;
 class PointLightComponent;
 class SpriteComponent;
+class TextComponent;
 
 class Player : public GameObject
 {
@@ -26,6 +27,8 @@ public:
 
 	static constexpr int32 c_MaxCornerCorrection = 6;
 	static constexpr int32 c_MaxJumpDelay = 5;
+
+	static constexpr float c_JoystickDeadZone = 10.0f; // Out of 100
 
 	virtual void Init() override;
 
@@ -54,6 +57,7 @@ protected:
 
 	void OnPressJump();
 	void OnPressL();
+	void OnPressAnyButton(uint32 buttonId);
 	void OnAnimationEnd();
 
 	void AnimStand();
@@ -63,8 +67,10 @@ protected:
 	void AnimStandingJumpFall();
 
 	CameraComponent* m_CameraComponent = nullptr;
-	PointLightComponent* m_DebugLight = nullptr;
 	SpriteComponent* m_SpriteComponent = nullptr;
+
+	PointLightComponent* m_DebugLight = nullptr;
+	TextComponent* m_DebugText = nullptr;
 
 	float m_SpeedX = 0.0f;
 	float m_SpeedY = 0.0f;

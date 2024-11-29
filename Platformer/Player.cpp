@@ -1,12 +1,15 @@
 #include "Player.h"
 
+#include <sstream>
 #include "App/GameApp.h"
 #include "App/PerfTimer.h"
 #include "Gameplay/Components/BoundsDrawComponent.h"
 #include "Gameplay/Components/CameraComponent.h"
 #include "Gameplay/Components/SpriteComponent.h"
 #include "Gameplay/Components/PointLightComponent.h"
+#include "Gameplay/Components/TextComponent.h"
 #include "Gameplay/World.h"
+#include "SFML/Window/Joystick.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "Util/Math.h"
 
@@ -28,6 +31,15 @@ void Player::Init()
 	m_DebugLight->SetRadius(100.0f);
 	m_DebugLight->SetEnabled(false);
 
+	m_DebugText = EmplaceComponent<TextComponent>();
+	m_DebugText->SetFont("FixedFont");
+	m_DebugText->m_Text.setFillColor(sf::Color::Red);
+	m_DebugText->m_Text.setString("Test");
+	m_DebugText->m_Text.setCharacterSize(32);
+	m_DebugText->SetVisible(false);
+
+	//-------------------------------------------------------------------------
+
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
 	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
 
@@ -46,6 +58,7 @@ void Player::Init()
 
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
+	GameApp::GetInputEventManager().GetButtonPressedEvent(0).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 }
 
 void Player::Tick(float deltaTime)
@@ -53,11 +66,13 @@ void Player::Tick(float deltaTime)
 	PerfTimer timer(__FUNCTION__);
 
 	// Running
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
+		sf::Joystick::getAxisPosition(0,sf::Joystick::Axis::X) < -c_JoystickDeadZone)
 	{
 		TryRun(-1);
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
+		sf::Joystick::getAxisPosition(0, sf::Joystick::Axis::X) > c_JoystickDeadZone)
 	{
 		TryRun(1);
 	}
@@ -94,7 +109,8 @@ void Player::Tick(float deltaTime)
 	// Jumping and gravity
 	const bool bPressedJump = GetWorld()->GetTicksSince(m_JumpPressedFrame) < c_MaxJumpDelay;
 	const bool bCanStartJump = m_OnGround && !m_IsJumping;
-	const bool bHoldingJump = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl);
+	const bool bHoldingJump = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
+		|| sf::Joystick::isButtonPressed(0,0);
 
 	if (bPressedJump && bCanStartJump)
 	{
@@ -247,6 +263,9 @@ bool Player::CheckOnGround() const
 	return GetWorld()->CheckForSolid(checkRect).IsHit();
 }
 
+//-----------------------------------------------------------------------------
+// Event Handling
+
 void Player::OnPressJump()
 {
 	m_JumpPressedFrame = GetWorld()->GetTickNumber();
@@ -255,6 +274,14 @@ void Player::OnPressJump()
 void Player::OnPressL()
 {
 	m_DebugLight->ToggleEnabled();
+}
+
+void Player::OnPressAnyButton(uint32 buttonId)
+{
+	std::stringstream s;
+	s << "Pressed " << buttonId;
+	m_DebugText->m_Text.setString(s.str());
+	m_DebugText->SetVisible(true);
 }
 
 void Player::OnAnimationEnd()

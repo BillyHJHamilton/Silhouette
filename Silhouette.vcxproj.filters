@@ -102,6 +102,9 @@
     <ClCompile Include="Platformer\Lights\StrobeLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Gameplay\Components\TextComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\LightShader.frag">
@@ -229,6 +232,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Platformer\Lights\StrobeLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameplay\Components\TextComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameplay\RenderLayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

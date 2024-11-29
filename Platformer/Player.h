@@ -25,10 +25,11 @@ public:
 	static constexpr float c_RunAccel = 0.4f;
 	static constexpr float c_RunDecel = 0.4f;
 
+	static constexpr int32 c_MaxJumpFrames = 14;
 	static constexpr float c_JumpSpeed = 7.0f;
 	static constexpr float c_JumpGravity = 0.15f;
 	static constexpr float c_Gravity = 0.4f;
-	static constexpr int32 c_MaxJumpFrames = 14;
+	static constexpr float c_MaxFallSpeed = 5.0f;
 
 	static constexpr int32 c_MaxCornerCorrection = 6;
 	static constexpr int32 c_MaxJumpDelay = 5;

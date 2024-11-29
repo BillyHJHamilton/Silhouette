@@ -310,7 +310,7 @@ void WorldGrid::GatherDraw(RenderManager& renderManager, sf::IntRect gatherRect)
 void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell&)> lambda)
 {
 	const IntVec startCell = PositionToCoords({rect.left, rect.top});
-	const IntVec endCell = PositionToCoords({rect.left+rect.width, rect.top + rect.height});
+	const IntVec endCell = PositionToCoords({rect.left + rect.width - 1, rect.top + rect.height - 1});
 	for (int32 x = startCell.x; x <= endCell.x; ++x)
 	{
 		for (int32 y = startCell.y; y <= endCell.y; ++y)
@@ -330,7 +330,7 @@ void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(WorldGridCell
 void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(const WorldGridCell&)> lambda) const
 {
 	const IntVec startCell = PositionToCoords({rect.left, rect.top});
-	const IntVec endCell = PositionToCoords({rect.left+rect.width, rect.top + rect.height});
+	const IntVec endCell = PositionToCoords({rect.left + rect.width - 1, rect.top + rect.height - 1});
 	for (int32 x = startCell.x; x <= endCell.x; ++x)
 	{
 		for (int32 y = startCell.y; y <= endCell.y; ++y)

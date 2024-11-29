@@ -142,7 +142,7 @@ void Player::Tick(float deltaTime)
 	else if (!m_OnGround)
 	{
 		// Normal gravity
-		m_SpeedY += c_Gravity;
+		m_SpeedY = std::min(m_SpeedY + c_Gravity, c_MaxFallSpeed);
 		m_JumpFrames = 0;
 
 		if (m_SpeedY > 1.0f)

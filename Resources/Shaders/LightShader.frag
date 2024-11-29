@@ -52,16 +52,14 @@ void main()
     for (int i = 0; i < areaLightNum; ++i)
     {
         vec2 distToLight = abs(areaLightCentre[i] - worldPosition);
-        float attenuationX = min(1.0, (areaLightExtent[i].x - distToLight.x)/areaLightBorder[i].x);
-        float attenuationY = min(1.0, (areaLightExtent[i].y - distToLight.y)/areaLightBorder[i].y);
+        float attenuationX = clamp((areaLightExtent[i].x - distToLight.x)/areaLightBorder[i].x, 0.0, 1.0);
+        float attenuationY = clamp((areaLightExtent[i].y - distToLight.y)/areaLightBorder[i].y, 0.0, 1.0);
         float attenuation = min(attenuationX, attenuationY);
 
-        vec2 lightNormal = normalize(areaLightVector[i]);
+        vec2 lightNormal = -normalize(areaLightVector[i]);
         float strangeDot = max(0.0, 0.2 + 0.8*dot(lightNormal, normal));
         float brightness = attenuation * strangeDot * pixel.b;
         accumulatedColour += brightness*areaLightColour[i];
-
-        //if (distToLight.x < areaLightExtent[i].x && distToLight.y < areaLightExtent[i].y)
     }
 
     gl_FragColor = vec4(accumulatedColour.r, accumulatedColour.g, accumulatedColour.b, pixel.a);

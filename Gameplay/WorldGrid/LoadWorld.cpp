@@ -76,6 +76,7 @@ void TmxParser::LoadMapFromTmx(std::string tmxFilename, std::string tilesetPath,
 
 	// Process object layers.
 	int32 objectsRead = 0;
+	int32 areasRead = 0;
 	for (pugi::xml_node objectGroupNode : mapNode.children("objectgroup"))
 	{
 		for (pugi::xml_node objectNode : objectGroupNode)
@@ -89,14 +90,28 @@ void TmxParser::LoadMapFromTmx(std::string tmxFilename, std::string tilesetPath,
 					objectNode.attribute("y").as_int());
 				SpawnByName(world, name, position);
 				++objectsRead;
-			};
+			}
+			else
+			{
+				// Object has no gid, so it's probably an area.
+				name = objectNode.attribute("type").as_string();
+				IntRect rect(
+					objectNode.attribute("x").as_int(),
+					objectNode.attribute("y").as_int(),
+					objectNode.attribute("width").as_int(),
+					objectNode.attribute("height").as_int());
+				if (rect.width > 0 && rect.height > 0)
+				{
+					pugi::xml_node propertiesNode = objectNode.child("properties");
+					SpawnAreaByName(world, name, rect, propertiesNode);
+					++areasRead;
+				}
+			}
 		}
 	}
 
-	if (objectsRead > 0)
-	{
-		std::cout << "Read " << objectsRead << " objects." << std::endl;
-	}
+	std::cout << "Read " << objectsRead << " objects." << std::endl;
+	std::cout << "Read " << areasRead << " areas." << std::endl;
 }
 
 void TmxParser::LoadTilesFromStream(std::istream& stream, WorldGrid& worldGrid)

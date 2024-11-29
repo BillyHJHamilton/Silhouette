@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="100" height="40" tilewidth="26" tileheight="22" infinite="0" nextlayerid="3" nextobjectid="10">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="100" height="40" tilewidth="26" tileheight="22" infinite="0" nextlayerid="3" nextobjectid="12">
  <tileset firstgid="1" source="Tiles1.tsx"/>
  <tileset firstgid="401" source="Ballet.tsx"/>
- <tileset firstgid="413" source="Objects1x1.tsx"/>
+ <tileset firstgid="419" source="Objects1x1.tsx"/>
  <layer id="1" name="Tile Layer 1" width="100" height="40">
   <data encoding="csv">
 21,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,22,0,0,0,0,21,0,0,0,0,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -49,9 +49,18 @@
  </layer>
  <objectgroup id="2" name="Object Layer 1">
   <object id="2" gid="401" x="52" y="264" width="44" height="44"/>
-  <object id="6" gid="413" x="208" y="286" width="26" height="22"/>
-  <object id="7" gid="413" x="494" y="286" width="26" height="22"/>
-  <object id="8" gid="413" x="806" y="286" width="26" height="22"/>
-  <object id="9" gid="413" x="1040" y="286" width="26" height="22"/>
+  <object id="6" gid="419" x="208" y="286" width="26" height="22"/>
+  <object id="7" gid="419" x="494" y="286" width="26" height="22"/>
+  <object id="8" gid="419" x="806" y="286" width="26" height="22"/>
+  <object id="10" type="AreaLight" x="936" y="0" width="286" height="330">
+   <properties>
+    <property name="BorderX" type="int" value="26"/>
+    <property name="BorderY" type="int" value="22"/>
+    <property name="Brightness" type="float" value="0.5"/>
+    <property name="Colour" type="color" value="#ff3030ff"/>
+    <property name="VectorX" type="float" value="0"/>
+    <property name="VectorY" type="float" value="1"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

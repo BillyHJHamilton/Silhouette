@@ -59,6 +59,7 @@ void Player::Init()
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
 	GameApp::GetInputEventManager().GetButtonPressedEvent(0).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
+	GameApp::GetInputEventManager().GetAnyButtonPressedEvent().AddWeakRef(GetWeakPlayer(), &Player::OnPressAnyButton);
 }
 
 void Player::Tick(float deltaTime)

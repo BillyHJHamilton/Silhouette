@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Gameplay/GameObject.h"
+#include "SFML/Window/Keyboard.hpp"
+#include "SFML/Window/Joystick.hpp"
 
 class CameraComponent;
 class PointLightComponent;
@@ -12,6 +14,9 @@ class Player : public GameObject
 public:
 	Player(IntVec position);
 	WeakRef<Player> GetWeakPlayer() { return m_RefTracker.MakeReference(this); }
+
+	static constexpr sf::Keyboard::Key c_JumpKey = sf::Keyboard::Key::Space;
+	static constexpr uint32 c_JumpButtonId = 3;
 
 	static constexpr int32 c_CameraOffsetX = 0;
 	static constexpr int32 c_CameraOffsetY = 22;

@@ -86,6 +86,11 @@ float InputEventManager::GetAxis(sf::Joystick::Axis axis) const
 	return sf::Joystick::getAxisPosition(m_LastJoystickId, axis);
 }
 
+bool InputEventManager::IsButtonPressed(uint32 button) const
+{
+	return sf::Joystick::isButtonPressed(m_LastJoystickId, button);
+}
+
 sf::Event::KeyEvent const& InputEventManager::GetEventDetails()
 {
 	return m_LastKeyEvent;

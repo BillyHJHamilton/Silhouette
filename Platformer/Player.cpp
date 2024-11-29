@@ -13,7 +13,13 @@
 #include "SFML/Window/Keyboard.hpp"
 #include "Util/Math.h"
 
-// Debug
+//-----------------------------------------------------------------------------
+// Snowed In Arcade Button Map:
+// (9)
+//  (3) (0) (6)
+//  (2) (1) (7)
+// 0 is Yellow, 1 is Red, 2 is Green, 3 is Blue, 6/7 are black, 9 is start
+//-----------------------------------------------------------------------------
 
 Player::Player(IntVec position) :
 	GameObject(IntRect(position, {26, 42}))
@@ -22,7 +28,9 @@ Player::Player(IntVec position) :
 
 void Player::Init()
 {
+	//-------------------------------------------------------------------------
 	// Debug
+
 	//EmplaceComponent<BoundsDrawComponent>();
 
 	m_DebugLight = EmplaceComponent<PointLightComponent>();
@@ -37,6 +45,9 @@ void Player::Init()
 	m_DebugText->m_Text.setString("Test");
 	m_DebugText->m_Text.setCharacterSize(32);
 	m_DebugText->SetVisible(false);
+
+	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
+	//GameApp::GetInputEventManager().GetAnyButtonPressedEvent().AddWeakRef(GetWeakPlayer(), &Player::OnPressAnyButton);
 
 	//-------------------------------------------------------------------------
 
@@ -56,10 +67,8 @@ void Player::Init()
 	TryMoveX(9);
 	TryMoveY(20);
 
-	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::LControl).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
-	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
-	GameApp::GetInputEventManager().GetButtonPressedEvent(0).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
-	GameApp::GetInputEventManager().GetAnyButtonPressedEvent().AddWeakRef(GetWeakPlayer(), &Player::OnPressAnyButton);
+	GameApp::GetInputEventManager().GetKeyPressedEvent(c_JumpKey).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
+	GameApp::GetInputEventManager().GetButtonPressedEvent(c_JumpButtonId).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 }
 
 void Player::Tick(float deltaTime)
@@ -112,8 +121,7 @@ void Player::Tick(float deltaTime)
 	// Jumping and gravity
 	const bool bPressedJump = GetWorld()->GetTicksSince(m_JumpPressedFrame) < c_MaxJumpDelay;
 	const bool bCanStartJump = m_OnGround && !m_IsJumping;
-	const bool bHoldingJump = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
-		|| sf::Joystick::isButtonPressed(0,0);
+	const bool bHoldingJump = sf::Keyboard::isKeyPressed(c_JumpKey) || sf::Joystick::isButtonPressed(0,0);
 
 	if (bPressedJump && bCanStartJump)
 	{
@@ -281,10 +289,10 @@ void Player::OnPressL()
 
 void Player::OnPressAnyButton(uint32 buttonId)
 {
-	std::stringstream s;
-	s << "Pressed " << buttonId;
-	m_DebugText->m_Text.setString(s.str());
-	m_DebugText->SetVisible(true);
+	//std::stringstream s;
+	//s << "Pressed " << buttonId;
+	//m_DebugText->m_Text.setString(s.str());
+	//m_DebugText->SetVisible(true);
 }
 
 void Player::OnAnimationEnd()

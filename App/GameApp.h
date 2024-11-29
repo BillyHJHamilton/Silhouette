@@ -40,6 +40,7 @@ protected:
 	virtual void ShutdownCleanup();
 
 	virtual void CreateWindow();
+	virtual void CreateWindowFullscreen();
 
 	virtual void AppLoop();
 

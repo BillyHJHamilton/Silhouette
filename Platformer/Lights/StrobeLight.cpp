@@ -32,7 +32,7 @@ void StrobeLight::Tick(float deltaTime)
 	double worldTime = GetWorld()->GetWorldTime();
 	double f = ((worldTime + m_StrobeOffset) / m_StrobePeriod) * Math::c_TwoPi;
 	float bright = static_cast<float>((std::sin(f) + 1.0)/2.0);
-	uint8 brightColor = std::lround(255.0f * bright);
+	uint8 brightColor = static_cast<uint8>(std::lround(255.0f * bright));
 	m_PointLight->SetBrightness(bright);
 	m_UnlitSprite->m_Sprite.setColor(sf::Color(brightColor, brightColor, brightColor, 255));
 }

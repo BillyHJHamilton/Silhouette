@@ -57,7 +57,11 @@ void GameApp::Run()
 	StartupLoadAssets();
 	StartupInit();
 
+#if _DEBUG
 	CreateWindow();
+#else
+	CreateWindowFullscreen();
+#endif
 
 	AppLoop();
 
@@ -81,23 +85,29 @@ void GameApp::CreateWindow()
 {
 	m_MainWindow.create(sf::VideoMode(640, 480), "Silhouette");
 	m_MainWindow.setKeyRepeatEnabled(false);
-	m_MainWindow.setVerticalSyncEnabled(false);
+	m_MainWindow.setVerticalSyncEnabled(true);
 	m_MainWindow.setFramerateLimit(0);
+	m_IsFullscreen = false;
+}
 
-	m_Clock.restart();
+void GameApp::CreateWindowFullscreen()
+{
+	m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
+	m_MainWindow.setKeyRepeatEnabled(false);
+	m_MainWindow.setVerticalSyncEnabled(true);
+	m_MainWindow.setFramerateLimit(0);
+	m_IsFullscreen = true;
 }
 
 void GameApp::ToggleFullscreen()
 {
 	if (!m_IsFullscreen)
 	{
-		m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
-		m_IsFullscreen = true;
+		CreateWindowFullscreen();
 	}
 	else
 	{
-		m_MainWindow.create(sf::VideoMode(640, 480), "Silhouette");
-		m_IsFullscreen = false;
+		CreateWindow();
 	}
 }
 
@@ -109,6 +119,8 @@ float GameApp::GetScreenRatio()
 
 void GameApp::AppLoop()
 {
+	m_Clock.restart();
+
 	#if PERF_TEST
 		int32 numDraws = 0;
 	#endif

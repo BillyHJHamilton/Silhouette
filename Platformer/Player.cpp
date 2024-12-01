@@ -51,6 +51,9 @@ void Player::Init()
 
 	//-------------------------------------------------------------------------
 
+	// Move player down to the ground...
+	TryMoveY(2);
+
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
 	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
 
@@ -58,14 +61,6 @@ void Player::Init()
 	AnimStand();
 	m_SpriteComponent->CentreOriginAndAlignToBoundingBox(SpriteComponent::Alignment::BottomCentre);
 	m_SpriteComponent->EventAnimationEnd.AddDelegate(this, &Player::OnAnimationEnd);
-
-	// Tile grid doesn't match right now... Move player up
-	m_Bounds.top -= 10;
-
-	// Bounding box is smaller than sprite, so move over to centre us in the tile.
-	// And move us down to the ground.
-	TryMoveX(9);
-	TryMoveY(20);
 
 	GameApp::GetInputEventManager().GetKeyPressedEvent(c_JumpKey).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 	GameApp::GetInputEventManager().GetButtonPressedEvent(c_JumpButtonId).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
@@ -77,23 +72,35 @@ void Player::Tick(float deltaTime)
 
 	const InputEventManager& inputManager = GameApp::GetInputEventManager();
 
-	// Running
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-		inputManager.GetAxis(sf::Joystick::Axis::X) < -c_JoystickDeadZone)
+	// Horizontal acceleration - Running or airwalking
+	if (IsPressingLeft(inputManager))
 	{
-		TryRun(-1);
+		if (m_OnGround)
+		{
+			TryRun(-1);
+		}
+		else
+		{
+			TryAirwalk(-1);
+		}
 	}
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-		inputManager.GetAxis(sf::Joystick::Axis::X) > c_JoystickDeadZone)
+	else if (IsPressingRight(inputManager))
 	{
-		TryRun(1);
+		if (m_OnGround)
+		{
+			TryRun(1);
+		}
+		else
+		{
+			TryAirwalk(1);
+		}
 	}
 	else
 	{
 		TryStop();
 	}
 
-	// Horizontal movement
+	// Apply horizontal movement
 	HitResult resultX = TryMoveX(m_SpeedX);
 	if (resultX.IsHit())
 	{
@@ -161,7 +168,7 @@ void Player::Tick(float deltaTime)
 	}*/
 }
 
-void Player::TryRun(int32 facing)
+void Player::TryAccelerateX(int32 facing, float maxSpeed, float accel, float decel)
 {
 	// Abort if blocked
 	IntRect testRect = GetBounds();
@@ -172,25 +179,24 @@ void Player::TryRun(int32 facing)
 	}
 
 	const float fFacing = static_cast<float>(facing);
-
-	// Add speed
 	if (m_SpeedX*fFacing < 0.0f)
 	{
-		m_SpeedX += fFacing*c_RunDecel;
+		m_SpeedX += fFacing*decel;
 	}
-	else if (m_SpeedX*fFacing < c_RunSpeed)
+	else if (m_SpeedX*fFacing < maxSpeed)
 	{
-		m_SpeedX += fFacing*c_RunAccel;
+		// Note: We don't slow the player down if *already* faster than max speed.
+		m_SpeedX = fFacing * std::min(fFacing*m_SpeedX + accel, maxSpeed);
 	}
+}
 
-	// Prevent overshooting
-	if (m_SpeedX*fFacing > c_RunSpeed)
-	{
-		m_SpeedX = c_RunSpeed*fFacing;
-	}
+void Player::TryRun(int32 facing)
+{
+	TryAccelerateX(facing, c_RunSpeed, c_RunAccel, c_RunDecel);
 
 	// Update sprite, camera, animation.
-	if (m_SpeedX*fFacing > 0.0f)
+	const float fFacing = static_cast<float>(facing);
+	if (Math::FloatGreater(m_SpeedX*fFacing, 0.0f))
 	{
 		m_SpriteComponent->m_Sprite.setScale(FVec(fFacing,1.0f));
 		m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
@@ -199,6 +205,19 @@ void Player::TryRun(int32 facing)
 		{
 			AnimRunStart();
 		}
+	}
+}
+
+void Player::TryAirwalk(int32 facing)
+{
+	TryAccelerateX(facing, c_AirwalkSpeed, c_AirwalkAccel, c_AirwalkDecel);
+
+	// Update sprite facing and camera.
+	const float fFacing = static_cast<float>(facing);
+	if (Math::FloatGreater(m_SpeedX*fFacing, 0.0f))
+	{
+		m_SpriteComponent->m_Sprite.setScale(FVec(fFacing,1.0f));
+		m_CameraComponent->SetTargetOffset({facing*c_CameraOffsetX, -c_CameraOffsetY});
 	}
 }
 
@@ -272,6 +291,18 @@ bool Player::CheckOnGround() const
 {
 	IntRect checkRect(m_Bounds.left, m_Bounds.top + m_Bounds.height, m_Bounds.width, 1);
 	return GetWorld()->CheckForSolid(checkRect).IsHit();
+}
+
+bool Player::IsPressingLeft(const InputEventManager& inputManager) const
+{
+	return sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
+		|| inputManager.GetAxis(sf::Joystick::Axis::X) < -c_JoystickDeadZone;
+}
+
+bool Player::IsPressingRight(const InputEventManager& inputManager) const
+{
+	return sf::Keyboard::isKeyPressed(sf::Keyboard::Right)\
+		|| inputManager.GetAxis(sf::Joystick::Axis::X) > c_JoystickDeadZone;
 }
 
 //-----------------------------------------------------------------------------

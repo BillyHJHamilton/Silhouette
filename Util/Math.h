@@ -51,6 +51,16 @@ namespace Math
 		return abs(a - b) < tolerance;
 	}
 
+	inline bool FloatLess(float a, float b)
+	{
+		return a < b - c_FloatEpsilon;
+	}
+
+	inline bool FloatGreater(float a, float b)
+	{
+		return a > b + c_FloatEpsilon;
+	}
+
 	inline bool FloatLessOrEqual(float a, float b)
 	{
 		return a < b + c_FloatEpsilon;

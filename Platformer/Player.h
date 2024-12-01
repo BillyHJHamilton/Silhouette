@@ -9,6 +9,8 @@ class PointLightComponent;
 class SpriteComponent;
 class TextComponent;
 
+class InputEventManager;
+
 class Player : public GameObject
 {
 public:
@@ -26,10 +28,14 @@ public:
 	static constexpr float c_RunDecel = 0.4f;
 
 	static constexpr int32 c_MaxJumpFrames = 14;
-	static constexpr float c_JumpSpeed = 7.0f;
-	static constexpr float c_JumpGravity = 0.15f;
+	static constexpr float c_JumpSpeed = 6.0f;
+	static constexpr float c_JumpGravity = 0.1f;
 	static constexpr float c_Gravity = 0.4f;
 	static constexpr float c_MaxFallSpeed = 5.0f;
+
+	static constexpr float c_AirwalkSpeed = 3.5f;
+	static constexpr float c_AirwalkAccel = 0.3f;
+	static constexpr float c_AirwalkDecel = 0.3f;
 
 	static constexpr int32 c_MaxCornerCorrection = 6;
 	static constexpr int32 c_MaxJumpDelay = 5;
@@ -54,12 +60,16 @@ protected:
 	};
 	AnimState m_AnimState = AnimState::None;
 
+	void TryAccelerateX(int32 facing, float maxSpeed, float accel, float decel);
 	void TryRun(int32 facing);
+	void TryAirwalk(int32 facing);
 	void TryStop();
 	void OnBlockedY(HitResult& hitResult);
 	bool TryCornerCorrection();
 
 	bool CheckOnGround() const;
+	bool IsPressingLeft(const InputEventManager& inputManager) const;
+	bool IsPressingRight(const InputEventManager& inputManager) const;
 
 	void OnPressJump();
 	void OnPressL();

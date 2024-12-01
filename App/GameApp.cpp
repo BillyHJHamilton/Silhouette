@@ -47,7 +47,7 @@ double GameApp::GetClockTime() const
 
 void GameApp::Run()
 {
-	//m_FixedFPS = 1.0f;
+	//m_FixedFPS = 10.0f;
 
 	assert(s_Instance == nullptr);
 	s_Instance = this;

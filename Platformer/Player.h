@@ -55,8 +55,10 @@ protected:
 		Stand,
 		Run,
 		RunStart,
+		RunStop,
 		StandingJumpStart,
-		StandingJumpFall
+		StandingJumpFall,
+		StandingJumpLand
 	};
 	AnimState m_AnimState = AnimState::None;
 
@@ -76,11 +78,14 @@ protected:
 	void OnPressAnyButton(uint32 buttonId);
 	void OnAnimationEnd();
 
+	void SelectAnimStand();
 	void AnimStand();
 	void AnimRun();
 	void AnimRunStart();
+	void AnimRunStop();
 	void AnimStandingJumpStart();
 	void AnimStandingJumpFall();
+	void AnimStandingJumpLand();
 
 	CameraComponent* m_CameraComponent = nullptr;
 	SpriteComponent* m_SpriteComponent = nullptr;

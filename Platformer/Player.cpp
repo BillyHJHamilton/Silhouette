@@ -107,7 +107,7 @@ void Player::Tick(float deltaTime)
 		m_SpeedX = 0.0f;
 		if (m_AnimState == AnimState::Run)
 		{
-			AnimStand();
+			AnimRunStop();
 		}
 	}
 
@@ -232,7 +232,7 @@ void Player::TryStop()
 
 	if (m_OnGround)
 	{
-		AnimStand();
+		SelectAnimStand();
 	}
 
 	if (std::abs(m_SpeedX) < Math::c_FloatEpsilon)
@@ -328,25 +328,40 @@ void Player::OnPressAnyButton(uint32 buttonId)
 
 void Player::OnAnimationEnd()
 {
-	if (m_AnimState == AnimState::RunStart)
+	switch (m_AnimState)
 	{
-		AnimRun();
+		case AnimState::RunStart:
+		{
+			AnimRun();
+			break;
+		}
+		case AnimState::RunStop:
+		case AnimState::StandingJumpLand:
+		{
+			AnimStand();
+			break;
+		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Animations
 
-void Player::AnimStand()
+void Player::SelectAnimStand()
 {
-	// Special stop transition
 	if (m_AnimState == AnimState::Run || m_AnimState == AnimState::RunStart)
 	{
-		m_SpriteComponent->SetupSubimages({44,44}, {0,1}, 4, 4, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, false);
-		m_AnimState = AnimState::Stand;
+		AnimRunStop();
 	}
-	else if (m_AnimState != AnimState::Stand)
+	else if (m_AnimState == AnimState::StandingJumpStart || m_AnimState == AnimState::StandingJumpFall)
+	{
+		AnimStandingJumpLand();
+	}
+}
+
+void Player::AnimStand()
+{
+	if (m_AnimState != AnimState::Stand)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {3,1}, 1, 1, 0);
 		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::None);
@@ -359,7 +374,7 @@ void Player::AnimRun()
 	if (m_AnimState != AnimState::Run)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {0,0}, 6, 6, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, true);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.2f, true);
 		m_AnimState = AnimState::Run;
 	}
 }
@@ -369,8 +384,18 @@ void Player::AnimRunStart()
 	if (m_AnimState != AnimState::RunStart)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {4,1}, 2, 2, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, true);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.2f, true);
 		m_AnimState = AnimState::RunStart;
+	}
+}
+
+void Player::AnimRunStop()
+{
+	if (m_AnimState != AnimState::RunStop)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {0,1}, 3, 3, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.2f, false);
+		m_AnimState = AnimState::RunStop;
 	}
 }
 
@@ -379,7 +404,7 @@ void Player::AnimStandingJumpStart()
 	if (m_AnimState != AnimState::StandingJumpStart)
 	{
 		m_SpriteComponent->SetupSubimages({44,44}, {0,2}, 2, 2, 0);
-		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerSecond, 12.0f, false);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.2f, false);
 		m_AnimState = AnimState::StandingJumpStart;
 	}
 }
@@ -391,5 +416,15 @@ void Player::AnimStandingJumpFall()
 		m_SpriteComponent->SetupSubimages({44,44}, {2,2}, 1, 1, 0);
 		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::None);
 		m_AnimState = AnimState::StandingJumpFall;
+	}
+}
+
+void Player::AnimStandingJumpLand()
+{
+	if (m_AnimState != AnimState::StandingJumpLand)
+	{
+		m_SpriteComponent->SetupSubimages({44,44}, {4,2}, 1, 1, 0);
+		m_SpriteComponent->Animate(SpriteComponent::AnimationMode::SubimagesPerTick, 0.15f, false);
+		m_AnimState = AnimState::StandingJumpLand;
 	}
 }

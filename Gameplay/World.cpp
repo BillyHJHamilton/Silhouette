@@ -1,9 +1,10 @@
 #include "World.h"
-#include "App/GameApp.h"
+#include "App/WindowManager.h"
 #include "App/PerfTimer.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/WorldGrid/WorldGrid.h"
 #include "Gameplay/RenderManager.h"
+#include "SFML/Graphics/RenderTarget.hpp"
 
 World::World()
 {
@@ -85,7 +86,7 @@ void World::SetMainView(sf::View& view)
 
 void World::UpdateViewport()
 {
-	const float screenRatio = GameApp::Get().GetScreenRatio();
+	const float screenRatio = WindowManager::Get().GetScreenRatio();
 	const FVec viewSize = m_MainView.getSize();
 	const float viewRatio = viewSize.x/viewSize.y;
 

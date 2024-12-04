@@ -1,7 +1,10 @@
 #include "GameApp.h"
 
 #include "App/AssetManager.h"
+#include "App/InputEventManager.h"
 #include "App/PerfTimer.h"
+#include "App/ShaderManager.h"
+#include "App/WindowManager.h"
 #include "Gameplay/Component.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/GameSystem.h"
@@ -10,6 +13,14 @@
 #include "Util/Random.h"
 
 GameApp* GameApp::s_Instance = nullptr;
+
+GameApp::GameApp()
+{
+	m_AssetManager = std::make_unique<AssetManager>();
+	m_InputEventManager = std::make_unique<InputEventManager>();
+	m_ShaderManager = std::make_unique<ShaderManager>();
+	m_WindowManager = std::make_unique<WindowManager>();
+}
 
 GameApp::~GameApp()
 {
@@ -24,20 +35,26 @@ GameApp& GameApp::Get()
 
 AssetManager& GameApp::GetAssetManager()
 {
-	assert(s_Instance != nullptr);
-	return Get().m_AssetManager;
+	assert(s_Instance && s_Instance->m_AssetManager);
+	return *Get().m_AssetManager;
 }
 
 InputEventManager& GameApp::GetInputEventManager()
 {
-	assert(s_Instance != nullptr);
-	return Get().m_InputEventManager;
+	assert(s_Instance && s_Instance->m_InputEventManager);
+	return *Get().m_InputEventManager;
 }
 
 ShaderManager& GameApp::GetShaderManager()
 {
-	assert(s_Instance != nullptr);
-	return Get().m_ShaderManager;
+	assert(s_Instance && s_Instance->m_ShaderManager);
+	return *Get().m_ShaderManager;
+}
+
+WindowManager& GameApp::GetWindowManager()
+{
+	assert(s_Instance && s_Instance->m_WindowManager);
+	return *Get().m_WindowManager;
 }
 
 double GameApp::GetClockTime() const
@@ -47,8 +64,6 @@ double GameApp::GetClockTime() const
 
 void GameApp::Run()
 {
-	//m_FixedFPS = 10.0f;
-
 	assert(s_Instance == nullptr);
 	s_Instance = this;
 
@@ -60,9 +75,9 @@ void GameApp::Run()
 	StartupInit();
 
 #if _DEBUG
-	CreateWindow();
+	m_WindowManager->CreateWindow();
 #else
-	CreateWindowFullscreen();
+	m_WindowManager->CreateWindowFullscreen();
 #endif
 
 	AppLoop();
@@ -83,42 +98,6 @@ void GameApp::ShutdownCleanup()
 {
 }
 
-void GameApp::CreateWindow()
-{
-	m_MainWindow.create(sf::VideoMode(768, 576), "Silhouette");
-	m_MainWindow.setKeyRepeatEnabled(false);
-	m_MainWindow.setVerticalSyncEnabled(true);
-	m_MainWindow.setFramerateLimit(0);
-	m_IsFullscreen = false;
-}
-
-void GameApp::CreateWindowFullscreen()
-{
-	m_MainWindow.create(sf::VideoMode::getDesktopMode(), "Silhouette", sf::Style::None);
-	m_MainWindow.setKeyRepeatEnabled(false);
-	m_MainWindow.setVerticalSyncEnabled(true);
-	m_MainWindow.setFramerateLimit(0);
-	m_IsFullscreen = true;
-}
-
-void GameApp::ToggleFullscreen()
-{
-	if (!m_IsFullscreen)
-	{
-		CreateWindowFullscreen();
-	}
-	else
-	{
-		CreateWindow();
-	}
-}
-
-float GameApp::GetScreenRatio()
-{
-	sf::Vector2u screenSize = m_MainWindow.getSize();
-	return static_cast<float>(screenSize.x) / static_cast<float>(screenSize.y);
-}
-
 void GameApp::AppLoop()
 {
 	m_Clock.restart();
@@ -128,7 +107,7 @@ void GameApp::AppLoop()
 	#endif
 
 	double frameStart = GetClockTime();
-	while (m_MainWindow.isOpen())
+	while (m_WindowManager->GetMainWindow().isOpen())
 	{
 		float fixedFrameDuration = 1.0f / static_cast<float>(m_FixedFPS);
 		double frameEnd = frameStart + fixedFrameDuration;
@@ -158,32 +137,32 @@ void GameApp::AppLoop()
 void GameApp::AppHandleEvents()
 {
 	sf::Event nextEvent;
-	while (m_MainWindow.pollEvent(nextEvent))
+	while (m_WindowManager->GetMainWindow().pollEvent(nextEvent))
 	{
 		switch (nextEvent.type)
 		{
 			case sf::Event::Closed:
-				m_MainWindow.close();
+				m_WindowManager->GetMainWindow().close();
 				break;
 
 			case sf::Event::KeyPressed:
-				m_InputEventManager.HandleKeyPressed(nextEvent.key);
+				m_InputEventManager->HandleKeyPressed(nextEvent.key);
 				break;
 
 			case sf::Event::KeyReleased:
-				m_InputEventManager.HandleKeyReleased(nextEvent.key);
+				m_InputEventManager->HandleKeyReleased(nextEvent.key);
 				break;
 
 			case sf::Event::JoystickButtonPressed:
-				m_InputEventManager.HandleButtonPressed(nextEvent.joystickButton);
+				m_InputEventManager->HandleButtonPressed(nextEvent.joystickButton);
 				break;
 
 			case sf::Event::JoystickButtonReleased:
-				m_InputEventManager.HandleButtonReleased(nextEvent.joystickButton);
+				m_InputEventManager->HandleButtonReleased(nextEvent.joystickButton);
 				break;
 
 			case sf::Event::JoystickMoved:
-				m_InputEventManager.HandleJoystickMoved(nextEvent.joystickMove);
+				m_InputEventManager->HandleJoystickMoved(nextEvent.joystickMove);
 				break;
 		}
 	}
@@ -193,8 +172,8 @@ void GameApp::AppTick(float deltaTime)
 {
 	{
 		//PerfTimer timer("VSync");
-		m_ShaderManager.ClearLights();
-		m_ShaderManager.ClearNormalTransform();
+		m_ShaderManager->ClearLights();
+		m_ShaderManager->ClearNormalTransform();
 	}
 
 	if (m_CurrentWorld != nullptr)
@@ -207,12 +186,12 @@ void GameApp::AppDraw()
 {
 	PerfTimer timer(__FUNCTION__);
 
-	m_MainWindow.clear();
+	m_WindowManager->GetMainWindow().clear();
 	if (m_CurrentWorld != nullptr)
 	{
-		m_CurrentWorld->Draw(m_MainWindow);
+		m_CurrentWorld->Draw(m_WindowManager->GetMainWindow());
 	}
-	m_MainWindow.display();
+	m_WindowManager->GetMainWindow().display();
 }
 
 #if UNIT_TESTS

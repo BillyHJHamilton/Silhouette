@@ -1,13 +1,13 @@
 #include "TextComponent.h"
 
-#include "App/GameApp.h"
+#include "App/AssetManager.h"
 #include "Gameplay/RenderManager.h"
 
 TypeInfo const TextComponent::s_TypeInfo = TypeInfo("TextComponent", { "Component" });
 
 void TextComponent::SetFont(NameHash fontName)
 {
-	const sf::Font* textFont = GameApp::GetAssetManager().FindFont(fontName);
+	const sf::Font* textFont = AssetManager::Get().FindFont(fontName);
 	if (textFont != nullptr)
 	{
 		m_Text.setFont(*textFont);

@@ -1,6 +1,12 @@
 #include "AssetManager.h"
+#include "App/GameApp.h"
 #include "SFML/Graphics/Texture.hpp"
 #include "SFML/Graphics/Font.hpp"
+
+AssetManager& AssetManager::Get()
+{
+	return GameApp::GetAssetManager();
+}
 
 void AssetManager::LoadFont(NameHash fontName, std::string filename)
 {

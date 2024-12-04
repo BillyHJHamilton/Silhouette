@@ -1,6 +1,12 @@
 #include "InputEventManager.h"
 
 #include <cmath>
+#include "App/GameApp.h"
+
+InputEventManager& InputEventManager::Get()
+{
+	return GameApp::GetInputEventManager();
+}
 
 MulticastEvent<>& InputEventManager::GetKeyPressedEvent(sf::Keyboard::Key key)
 {

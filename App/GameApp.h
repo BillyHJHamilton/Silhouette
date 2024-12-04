@@ -1,11 +1,13 @@
 #pragma once
 
-#include "App/AssetManager.h"
-#include "App/InputEventManager.h"
-#include "App/ShaderManager.h"
+#include <memory>
+#include "Core/Core.h"
+#include "SFML/System/Clock.hpp"
 
-#include "SFML/Graphics/RenderWindow.hpp"
-
+class AssetManager;
+class InputEventManager;
+class ShaderManager;
+class WindowManager;
 class World;
 
 // Used to run memory tests after GameApp destructor.
@@ -18,20 +20,19 @@ public:
 class GameApp : public AppTestWrapper
 {
 public:
+	GameApp();
 	virtual ~GameApp();
 
 	static GameApp& Get();
 	static AssetManager& GetAssetManager();
 	static InputEventManager& GetInputEventManager();
 	static ShaderManager& GetShaderManager();
+	static WindowManager& GetWindowManager();
 
 	// Returns seconds since the game app started.
 	double GetClockTime() const;
 
 	void Run();
-
-	void ToggleFullscreen();
-	float GetScreenRatio();
 
 protected:
 	virtual void StartupLoadAssets();
@@ -39,27 +40,22 @@ protected:
 
 	virtual void ShutdownCleanup();
 
-	virtual void CreateWindow();
-	virtual void CreateWindowFullscreen();
-
 	virtual void AppLoop();
 
 	void AppHandleEvents();
 	void AppTick(float deltaTime);
 	void AppDraw();
 
-	sf::RenderWindow m_MainWindow;
 	sf::Clock m_Clock;
 
-	bool m_IsFullscreen;
-	
 	float m_FixedFPS = 60.0f;
-	//float m_FixedFPS = 10.0f;
 	float m_LastTick = 0.0f;
 
-	AssetManager m_AssetManager;
-	InputEventManager m_InputEventManager;
-	ShaderManager m_ShaderManager;
+	std::unique_ptr<AssetManager> m_AssetManager;
+	std::unique_ptr<InputEventManager> m_InputEventManager;
+	std::unique_ptr<ShaderManager> m_ShaderManager;
+	std::unique_ptr<WindowManager> m_WindowManager;
+
 	World* m_CurrentWorld = nullptr;
 
 private:

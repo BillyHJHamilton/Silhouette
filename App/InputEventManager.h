@@ -8,6 +8,8 @@
 class InputEventManager
 {
 public:
+	static InputEventManager& Get();
+
 	// Get the key event, so that you can add a handler.
 	MulticastEvent<>& GetKeyPressedEvent(sf::Keyboard::Key key);
 	MulticastEvent<>& GetKeyReleasedEvent(sf::Keyboard::Key key);

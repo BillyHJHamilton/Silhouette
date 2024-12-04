@@ -1,6 +1,5 @@
 #include "RenderManager.h"
 
-#include "App/GameApp.h"
 #include "App/ShaderManager.h"
 #include "App/PerfTimer.h"
 #include "SFML/Graphics/RenderTarget.hpp"
@@ -17,7 +16,7 @@ void RenderManager::DrawAll(sf::RenderTarget& target)
 {
 	PerfTimer timer(__FUNCTION__);
 
-	ShaderManager& shaderManager = GameApp::GetShaderManager();
+	ShaderManager &shaderManager = ShaderManager::Get();
 	shaderManager.SetLightUniforms();
 	sf::Shader* lightShader = shaderManager.GetLightShader();
 

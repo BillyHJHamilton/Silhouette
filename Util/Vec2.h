@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <memory>
 #include "Core/BasicTypes.h"
 #include "SFML/System/Vector2.hpp"
 

@@ -1,7 +1,6 @@
 #include "WorldGrid.h"
 
 #include <algorithm>
-#include "App/GameApp.h"
 #include "App/AssetManager.h"
 #include "App/PerfTimer.h"
 #include "Gameplay/GameObject.h"
@@ -188,7 +187,7 @@ void WorldGrid::AddTile(IntVec position, int32 tileId)
 void WorldGrid::BuildVertexArrays()
 {
 	// Todo: Probably something more reasonable about tilesets and textures.
-	AssetManager& AssetManager = GameApp::GetAssetManager();
+	AssetManager& AssetManager = AssetManager::Get();
 	m_Tileset.m_Texture = AssetManager.FindTexture("Tileset");
 	m_Tileset.m_TilesPerRow = 20; // TODO this should really come from the tiled map
 
@@ -237,10 +236,6 @@ void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 {
 	PerfTimer timer(__FUNCTION__);
 	assert(m_TickList.empty());
-
-	// TODO: This should happen in light components
-	//ShaderManager& shaderManager = GameApp::GetShaderManager();
-	//shaderManager.AddAreaLight({ 0.0f, 0.0f, 1000.0f, 1000.0f }, {100.0f, 200.0f}, { 0.0f, -1.0f }, { 0.5f, 0.0f, 0.0f });
 
 	ForEachCellInRect(tickArea,
 		[this](WorldGridCell& cell)

@@ -52,7 +52,7 @@ protected:
 	double m_WorldTime = 0.0;
 
 	// List of other singletons managed by World.h.  Automatically instantiated when requested.
-	// Generally speaking, if the object is used in World.cpp, it should be a unique_ptr like WorldGrid.
+	// As a rule, if the object is used in World.cpp, it should be a unique_ptr like WorldGrid.
 	// If it isn't used in World.cpp, it should be a system.
 	std::unordered_map<NameHash, std::unique_ptr<GameSystem>> m_SystemMap;
 };

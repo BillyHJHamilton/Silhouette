@@ -1,12 +1,11 @@
 #include "SpriteComponent.h"
 
-#include "App/GameApp.h"
+#include "App/AssetManager.h"
 #include "App/ShaderManager.h"
 #include "Core/TypeInfo.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/RenderManager.h"
 #include "SFML/Graphics/RenderTarget.hpp"
-
 #include "SFML/Graphics/Shader.hpp"
 #include "SFML/Graphics/Transform.hpp"
 #include "Util/Math.h"
@@ -15,7 +14,7 @@ TypeInfo const SpriteComponent::s_TypeInfo = TypeInfo("SpriteComponent", {"Compo
 
 SpriteComponent::SpriteComponent(NameHash textureName)
 {
-	const sf::Texture* spriteTexture = GameApp::GetAssetManager().FindTexture(textureName);
+	const sf::Texture* spriteTexture = AssetManager::Get().FindTexture(textureName);
 	if (spriteTexture != nullptr)
 	{
 		m_Sprite.setTexture(*spriteTexture);

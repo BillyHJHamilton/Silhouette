@@ -1,7 +1,7 @@
 #include "Player.h"
 
 #include <sstream>
-#include "App/GameApp.h"
+#include "App/InputEventManager.h"
 #include "App/PerfTimer.h"
 #include "Gameplay/Components/BoundsDrawComponent.h"
 #include "Gameplay/Components/CameraComponent.h"
@@ -9,6 +9,7 @@
 #include "Gameplay/Components/PointLightComponent.h"
 #include "Gameplay/Components/TextComponent.h"
 #include "Gameplay/World.h"
+#include "Platformer/Systems/PlayerSystem.h"
 #include "SFML/Window/Joystick.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "Util/Math.h"
@@ -28,6 +29,24 @@ Player::Player(IntVec position) :
 
 void Player::Init()
 {
+	// Move player down to the ground...
+	TryMoveY(2);
+
+	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
+	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
+
+	m_SpriteComponent = EmplaceComponent<SpriteComponent>("Player");
+	AnimStand();
+	m_SpriteComponent->CentreOriginAndAlignToBoundingBox(SpriteComponent::Alignment::BottomCentre);
+	m_SpriteComponent->EventAnimationEnd.AddDelegate(this, &Player::OnAnimationEnd);
+	
+	InputEventManager& inputManager = InputEventManager::Get();
+	inputManager.GetKeyPressedEvent(c_JumpKey).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
+	inputManager.GetButtonPressedEvent(c_JumpButtonId).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
+
+	PlayerSystem* playerSystem = GetWorld()->GetSystem<PlayerSystem>();
+	playerSystem->RegisterPlayer(GetWeakPlayer());
+
 	//-------------------------------------------------------------------------
 	// Debug
 
@@ -46,31 +65,16 @@ void Player::Init()
 	m_DebugText->m_Text.setCharacterSize(32);
 	m_DebugText->SetVisible(false);
 
-	GameApp::GetInputEventManager().GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
-	//GameApp::GetInputEventManager().GetAnyButtonPressedEvent().AddWeakRef(GetWeakPlayer(), &Player::OnPressAnyButton);
+	inputManager.GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
 
 	//-------------------------------------------------------------------------
-
-	// Move player down to the ground...
-	TryMoveY(2);
-
-	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
-	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
-
-	m_SpriteComponent = EmplaceComponent<SpriteComponent>("Player");
-	AnimStand();
-	m_SpriteComponent->CentreOriginAndAlignToBoundingBox(SpriteComponent::Alignment::BottomCentre);
-	m_SpriteComponent->EventAnimationEnd.AddDelegate(this, &Player::OnAnimationEnd);
-
-	GameApp::GetInputEventManager().GetKeyPressedEvent(c_JumpKey).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
-	GameApp::GetInputEventManager().GetButtonPressedEvent(c_JumpButtonId).AddWeakRef(GetWeakPlayer(), &Player::OnPressJump);
 }
 
 void Player::Tick(float deltaTime)
 {
 	PerfTimer timer(__FUNCTION__);
 
-	const InputEventManager& inputManager = GameApp::GetInputEventManager();
+	const InputEventManager& inputManager = InputEventManager::Get();
 
 	// Horizontal acceleration - Running or airwalking
 	if (IsPressingLeft(inputManager))

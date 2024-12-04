@@ -14,6 +14,8 @@ public:
 	static constexpr int32 c_MaxPointLights = 8;
 	static constexpr int32 c_MaxAreaLights = 8;
 
+	static ShaderManager& Get();
+
 	void LoadShaders();
 	sf::Shader* GetLightShader();
 

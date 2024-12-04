@@ -9,6 +9,8 @@
 class AssetManager
 {
 public:
+	static AssetManager& Get();
+
 	// Fonts
 
 	void LoadFont(NameHash fontName, std::string filename);

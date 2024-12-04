@@ -1,9 +1,15 @@
 #include "ShaderManager.h"
 
 #include <iostream>
+#include "App/GameApp.h"
 #include "App/PerfTimer.h"
 #include "SFML/Graphics/Transformable.hpp"
 #include "Util/Math.h"
+
+ShaderManager& ShaderManager::Get()
+{
+	return GameApp::GetShaderManager();
+}
 
 void ShaderManager::LoadShaders()
 {

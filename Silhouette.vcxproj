@@ -138,6 +138,7 @@
     <ClCompile Include="App\GameApp.cpp" />
     <ClCompile Include="App\InputEventManager.cpp" />
     <ClCompile Include="App\PerfTimer.cpp" />
+    <ClCompile Include="App\WindowManager.cpp" />
     <ClCompile Include="Gameplay\Components\AreaLightComponent.cpp" />
     <ClCompile Include="Gameplay\Components\BoundsDrawComponent.cpp" />
     <ClCompile Include="Gameplay\Components\CameraComponent.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="Platformer\PlatformerApp.cpp" />
     <ClCompile Include="Platformer\Player.cpp" />
     <ClCompile Include="Platformer\SpawnByName.cpp" />
+    <ClCompile Include="Platformer\Systems\PlayerSystem.cpp" />
     <ClCompile Include="Util\ColourUtil.cpp" />
     <ClCompile Include="Util\Random.cpp" />
     <ClCompile Include="Core\Reference.cpp" />
@@ -179,6 +181,7 @@
     <ClInclude Include="App\InputEventManager.h" />
     <ClInclude Include="App\PerfTimer.h" />
     <ClInclude Include="App\ShaderManager.h" />
+    <ClInclude Include="App\WindowManager.h" />
     <ClInclude Include="Core\BasicTypes.h" />
     <ClInclude Include="Core\Core.h" />
     <ClInclude Include="Core\Event.h" />
@@ -207,7 +210,9 @@
     <ClInclude Include="Platformer\Lights\StrobeLight.h" />
     <ClInclude Include="Platformer\PlatformerApp.h" />
     <ClInclude Include="Platformer\Player.h" />
+    <ClInclude Include="Platformer\Systems\PlayerSystem.h" />
     <ClInclude Include="Platformer\SpawnByName.h" />
+    <ClInclude Include="UserInterface\Widget.h" />
     <ClInclude Include="Util\ColourUtil.h" />
     <ClInclude Include="Util\Rect.h" />
     <ClInclude Include="Util\MapUtil.h" />

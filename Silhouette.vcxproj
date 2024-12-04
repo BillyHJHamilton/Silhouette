@@ -165,6 +165,7 @@
     <ClCompile Include="Platformer\Player.cpp" />
     <ClCompile Include="Platformer\SpawnByName.cpp" />
     <ClCompile Include="Platformer\Systems\PlayerSystem.cpp" />
+    <ClCompile Include="UserInterface\WidgetManager.cpp" />
     <ClCompile Include="Util\ColourUtil.cpp" />
     <ClCompile Include="Util\Random.cpp" />
     <ClCompile Include="Core\Reference.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Platformer\Systems\PlayerSystem.h" />
     <ClInclude Include="Platformer\SpawnByName.h" />
     <ClInclude Include="UserInterface\Widget.h" />
+    <ClInclude Include="UserInterface\WidgetManager.h" />
     <ClInclude Include="Util\ColourUtil.h" />
     <ClInclude Include="Util\Rect.h" />
     <ClInclude Include="Util\MapUtil.h" />

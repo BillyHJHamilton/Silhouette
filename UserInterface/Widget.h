@@ -9,11 +9,14 @@ class Widget
 {
 public:
 	virtual void Tick(float deltaTime) {}
-	virtual void GatherDraw(RenderManager& renderManager) const;
+	virtual void GatherDraw(RenderManager& renderManager) const {};
 
 	WeakRef<Widget> GetWeakRef() { return m_RefTracker.MakeReference(this); }
 
 	World* GetWorld() { return m_World; }
+
+	int32 GetDepth() { return m_Depth; }
+	void SetDepth(int32 newDepth) { m_Depth = newDepth; }
 
 	// For exclusive use by World::AddWidget:
 	void SetWorld(World* world) { m_World = world; }
@@ -24,6 +27,9 @@ public:
 
 protected:
 	RefTracker m_RefTracker;
+
+	// Higher number means draw first.
+	int32 m_Depth = 0;
 
 private:
 	World* m_World = nullptr;

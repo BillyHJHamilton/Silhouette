@@ -17,6 +17,9 @@ public:
 	void SetVisible(bool visibility) { m_Visible = visibility; };
 	void SetLayer(RenderLayer::Enum layer) { m_RenderLayer = layer; }
 
+	bool IsVisible() const { return m_Visible; }
+	RenderLayer::Enum GetLayer() const { return m_RenderLayer; }
+
 	enum class AnimationMode
 	{
 		None,
@@ -45,6 +48,9 @@ public:
 	enum class Alignment { TopLeft, TopCentre, TopRight, LeftCentre, Centre, RightCentre, BottomLeft, BottomCentre, BottomRight };
 	void CentreOriginAndAlignToBoundingBox(Alignment alignment);
 
+	void SetHitFlash(bool hitFlash) { m_HitFlash = hitFlash; }
+	bool IsHitFlashOn() const { return m_HitFlash; } 
+
 	// Public to allow changing local transform, etc.
 	sf::Sprite m_Sprite;
 
@@ -66,4 +72,6 @@ private:
 	bool m_AnimationLoop = true;
 	float m_AnimationRate = 1.0f;
 	float m_AnimationCounter = 0.0f;
+
+	bool m_HitFlash = false;
 };

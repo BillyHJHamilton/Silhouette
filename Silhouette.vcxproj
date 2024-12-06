@@ -143,8 +143,11 @@
     <ClCompile Include="Gameplay\Components\BoundsDrawComponent.cpp" />
     <ClCompile Include="Gameplay\Components\CameraComponent.cpp" />
     <ClCompile Include="Gameplay\Components\PointLightComponent.cpp" />
+    <ClCompile Include="Gameplay\Components\ScreenFadeComponent.cpp" />
     <ClCompile Include="Gameplay\Components\TextComponent.cpp" />
+    <ClCompile Include="Gameplay\RenderLayer.cpp" />
     <ClCompile Include="Gameplay\RenderManager.cpp" />
+    <ClCompile Include="Platformer\Components\HealthComponent.cpp" />
     <ClCompile Include="Platformer\Lights\AreaLight.cpp" />
     <ClCompile Include="Platformer\Lights\StrobeLight.cpp" />
     <ClCompile Include="Platformer\Main.cpp" />
@@ -165,13 +168,15 @@
     <ClCompile Include="Platformer\Player.cpp" />
     <ClCompile Include="Platformer\SpawnByName.cpp" />
     <ClCompile Include="Platformer\Systems\PlayerSystem.cpp" />
-    <ClCompile Include="UserInterface\WidgetManager.cpp" />
+    <ClCompile Include="Platformer\Components\HealthbarComponent.cpp" />
+    <ClCompile Include="UI\WidgetManager.cpp" />
     <ClCompile Include="Util\ColourUtil.cpp" />
     <ClCompile Include="Util\Random.cpp" />
     <ClCompile Include="Core\Reference.cpp" />
     <ClCompile Include="Gameplay\WorldGrid\TilePatch.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\HitFlash.frag" />
     <None Include="Resources\Shaders\LightShader.frag" />
     <None Include="Resources\Shaders\LightShader.vert" />
     <None Include="Resources\Shaders\SimpleLight.frag" />
@@ -207,14 +212,17 @@
     <ClInclude Include="Gameplay\WorldGrid\TileConstants.h" />
     <ClInclude Include="Gameplay\World.h" />
     <ClInclude Include="Gameplay\WorldGrid\WorldGrid.h" />
+    <ClInclude Include="Platformer\Components\HealthComponent.h" />
+    <ClInclude Include="Gameplay\Components\ScreenFadeComponent.h" />
     <ClInclude Include="Platformer\Lights\AreaLight.h" />
     <ClInclude Include="Platformer\Lights\StrobeLight.h" />
     <ClInclude Include="Platformer\PlatformerApp.h" />
     <ClInclude Include="Platformer\Player.h" />
     <ClInclude Include="Platformer\Systems\PlayerSystem.h" />
     <ClInclude Include="Platformer\SpawnByName.h" />
-    <ClInclude Include="UserInterface\Widget.h" />
-    <ClInclude Include="UserInterface\WidgetManager.h" />
+    <ClInclude Include="Platformer\Components\HealthbarComponent.h" />
+    <ClInclude Include="UI\Widget.h" />
+    <ClInclude Include="UI\WidgetManager.h" />
     <ClInclude Include="Util\ColourUtil.h" />
     <ClInclude Include="Util\Rect.h" />
     <ClInclude Include="Util\MapUtil.h" />
@@ -226,6 +234,9 @@
     <ClInclude Include="Gameplay\WorldGrid\Tileset.h" />
     <ClInclude Include="Util\Vec2.h" />
     <ClInclude Include="Util\VectorUtil.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Notes\ComponentTemplate.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

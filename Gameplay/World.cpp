@@ -41,12 +41,11 @@ void World::Draw(sf::RenderTarget& renderTarget) const
 	// Draw area in main view, plus neighbouring patches (in case large sprites are spilling over).
 	const FVec viewTopLeft = m_MainView.getCenter() - 0.5f*m_MainView.getSize();
 	const IntVec drawTopLeft = RoundToIntVec(viewTopLeft - 0.5f*ToFVec(c_PatchWidth, c_PatchHeight));
-	const IntVec drawSize = RoundToIntVec(m_MainView.getSize()) + 2*IntVec(c_PatchWidth, c_PatchHeight);
+	const IntVec drawSize = RoundToIntVec(m_MainView.getSize()) + IntVec(c_PatchWidth, c_PatchHeight);
 	const IntRect drawRect(drawTopLeft, drawSize);
 
-	renderTarget.setView(m_MainView);
 	m_WorldGrid->GatherDraw(*m_RenderManager, drawRect);
-	m_RenderManager->DrawAll(renderTarget);
+	m_RenderManager->DrawAll(renderTarget, m_MainView);
 }
 
 WorldGrid& World::GetWorldGrid()
@@ -81,25 +80,4 @@ void World::UpdateObjectPosition(GameObject* object)
 void World::SetMainView(sf::View& view)
 {
 	m_MainView = view;
-	UpdateViewport();
-}
-
-void World::UpdateViewport()
-{
-	const float screenRatio = WindowManager::Get().GetScreenRatio();
-	const FVec viewSize = m_MainView.getSize();
-	const float viewRatio = viewSize.x/viewSize.y;
-
-	const float viewScreenRatio = viewRatio / screenRatio;
-	if (viewScreenRatio < 1.0f) // Need to letterbox on left/right
-	{
-		const float padding = (1.0f - viewScreenRatio)*0.5f;
-		m_MainView.setViewport(FRect(padding, 0.0f, viewScreenRatio, 1.0f));
-	}
-	else if (viewScreenRatio > 1.0f) // Need to letterbox on top/bottom
-	{
-		const float inverseRatio = 1.0f/viewScreenRatio;
-		const float padding = (1.0f - inverseRatio)*0.5f;
-		m_MainView.setViewport(FRect(0.0f, padding, 1.0f, inverseRatio));
-	}
 }

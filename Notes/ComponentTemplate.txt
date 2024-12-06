@@ -1,0 +1,38 @@
+#pragma once
+
+#include "Gameplay/Component.h"
+
+class ExampleComponent : public Component
+{
+public:
+	MACRO_DeclareTypeInfo(ExampleComponent)
+
+	virtual void OnAddedToObject(GameObject& newOwner) override;
+	virtual void Tick(float deltaTime) override;
+	virtual void GatherDraw(RenderManager& renderManager, const sf::Transform& ObjectTransform) const override;
+
+protected:
+
+};
+
+--------------
+And in the C++
+--------------
+
+#include "ExampleComponent.h"
+
+#include "Gameplay/RenderManager.h"
+
+TypeInfo const ExampleComponent::s_TypeInfo = TypeInfo("ExampleComponent", { "Component" });
+
+void ExampleComponent::OnAddedToObject(GameObject& newOwner)
+{
+}
+
+void ExampleComponent::Tick(float deltaTime)
+{
+}
+
+void ExampleComponent::GatherDraw(RenderManager& renderManager, const sf::Transform& ObjectTransform) const
+{
+}

@@ -5,7 +5,10 @@
 #include "SFML/Window/Joystick.hpp"
 
 class CameraComponent;
+class HealthComponent;
+class HealthbarComponent;
 class PointLightComponent;
+class ScreenFadeComponent;
 class SpriteComponent;
 class TextComponent;
 
@@ -75,6 +78,7 @@ protected:
 
 	void OnPressJump();
 	void OnPressL();
+	void OnPressK();
 	void OnPressAnyButton(uint32 buttonId);
 	void OnAnimationEnd();
 
@@ -88,6 +92,9 @@ protected:
 	void AnimStandingJumpLand();
 
 	CameraComponent* m_CameraComponent = nullptr;
+	HealthComponent* m_HealthComponent = nullptr;
+	HealthbarComponent* m_HealthbarComponent = nullptr;
+	ScreenFadeComponent* m_ScreenFadeComponent = nullptr;
 	SpriteComponent* m_SpriteComponent = nullptr;
 
 	PointLightComponent* m_DebugLight = nullptr;

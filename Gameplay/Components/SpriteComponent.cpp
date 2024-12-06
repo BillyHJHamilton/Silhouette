@@ -68,7 +68,14 @@ void SpriteComponent::GatherDraw(RenderManager& renderManager, const sf::Transfo
 {
 	if (m_Visible && m_Sprite.getTexture() != nullptr)
 	{
-		renderManager.AddDrawable(m_RenderLayer, &m_Sprite, objectTransform, m_Sprite.getRotation(), m_Sprite.getScale());
+		if (m_HitFlash)
+		{
+			renderManager.AddDrawable(RenderLayer::FrontEffects_HitFlash, &m_Sprite, objectTransform);
+		}
+		else
+		{
+			renderManager.AddDrawable(m_RenderLayer, &m_Sprite, objectTransform, m_Sprite.getRotation(), m_Sprite.getScale());
+		}
 	}
 }
 

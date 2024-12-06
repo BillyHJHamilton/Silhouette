@@ -18,6 +18,7 @@ public:
 
 	void LoadShaders();
 	sf::Shader* GetLightShader();
+	sf::Shader* GetHitFlashShader();
 
 	// API for gathering lights.
 	// Each frame, call ClearLights, then add all the lights that should render.
@@ -29,8 +30,11 @@ public:
 	void SetNormalTransform(float rotation, FVec scale);
 	void ClearNormalTransform();
 
+	void SetHitFlashUniforms();
+
 private:
 	sf::Shader m_LightShader;
+	sf::Shader m_HitFlashShader;
 
 	// Light buffers for rendering.
 	struct PointLights

@@ -13,18 +13,36 @@ ShaderManager& ShaderManager::Get()
 
 void ShaderManager::LoadShaders()
 {
-	const bool loaded = m_LightShader.loadFromFile(
+	bool loaded = false;
+
+	loaded = m_LightShader.loadFromFile(
 		"Resources/Shaders/LightShader.vert",
 		"Resources/Shaders/LightShader.frag");
 	if (!loaded)
     {
         std::cerr << "Failed to load light shader" << std::endl;
     }
+
+	loaded = m_HitFlashShader.loadFromFile("Resources/Shaders/HitFlash.frag",
+		sf::Shader::Type::Fragment);
+	if (!loaded)
+    {
+        std::cerr << "Failed to load hit flash shader" << std::endl;
+    }
+	else
+	{
+		m_HitFlashShader.setUniform("flashColour", sf::Vector3f(0.376f,0.0f,0.047f));
+	}
 }
 
 sf::Shader* ShaderManager::GetLightShader()
 {
     return &m_LightShader;
+}
+
+sf::Shader* ShaderManager::GetHitFlashShader()
+{
+    return &m_HitFlashShader;
 }
 
 void ShaderManager::ClearLights()
@@ -104,3 +122,9 @@ void ShaderManager::ClearNormalTransform()
 	m_LightShader.setUniform("normalTransform1", FVec(0.0,1.0));
 }
 
+void ShaderManager::SetHitFlashUniforms()
+{
+	double clockTime = GameApp::Get().GetClockTime();
+	float modTime = static_cast<float>(std::fmod(clockTime, 60.0f));
+	m_HitFlashShader.setUniform("modTime", modTime);
+}

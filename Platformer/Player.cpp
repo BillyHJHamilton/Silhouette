@@ -5,10 +5,13 @@
 #include "App/PerfTimer.h"
 #include "Gameplay/Components/BoundsDrawComponent.h"
 #include "Gameplay/Components/CameraComponent.h"
+#include "Gameplay/Components/ScreenFadeComponent.h"
 #include "Gameplay/Components/SpriteComponent.h"
 #include "Gameplay/Components/PointLightComponent.h"
 #include "Gameplay/Components/TextComponent.h"
 #include "Gameplay/World.h"
+#include "Platformer/Components/HealthComponent.h"
+#include "Platformer/Components/HealthbarComponent.h"
 #include "Platformer/Systems/PlayerSystem.h"
 #include "SFML/Window/Joystick.hpp"
 #include "SFML/Window/Keyboard.hpp"
@@ -34,6 +37,12 @@ void Player::Init()
 
 	m_CameraComponent = EmplaceComponent<CameraComponent>(IntVec(384,288));
 	m_CameraComponent->SetOffset({c_CameraOffsetX, -c_CameraOffsetY});
+
+	m_HealthComponent = EmplaceComponent<HealthComponent>(100.0f);
+	m_HealthbarComponent = EmplaceComponent<HealthbarComponent>();
+
+	m_ScreenFadeComponent = EmplaceComponent<ScreenFadeComponent>(sf::Color::Black);
+	m_ScreenFadeComponent->StartFadeIn(2.0f, /*fromMax*/ true);
 
 	m_SpriteComponent = EmplaceComponent<SpriteComponent>("Player");
 	AnimStand();
@@ -66,6 +75,7 @@ void Player::Init()
 	m_DebugText->SetVisible(false);
 
 	inputManager.GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
+	inputManager.GetKeyPressedEvent(sf::Keyboard::K).AddWeakRef(GetWeakPlayer(), &Player::OnPressK);
 
 	//-------------------------------------------------------------------------
 }
@@ -320,6 +330,11 @@ void Player::OnPressJump()
 void Player::OnPressL()
 {
 	m_DebugLight->ToggleEnabled();
+}
+
+void Player::OnPressK()
+{
+	m_HealthComponent->ApplyDamage(10.0f);
 }
 
 void Player::OnPressAnyButton(uint32 buttonId)

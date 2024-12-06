@@ -6,7 +6,9 @@
 #include "Gameplay/RenderLayer.h"
 #include "SFML/Graphics/RenderStates.hpp"
 #include "SFML/Graphics/Transformable.hpp"
+#include "SFML/Graphics/View.hpp"
 #include "Util/Vec2.h"
+#include "Util/Rect.h"
 
 namespace sf
 {
@@ -26,9 +28,11 @@ public:
 		float normalRotation = 0.0f, FVec normalScale = FVec(1.0f,1.0f));
 
 	// Draw all the enqueued objects.
-	void DrawAll(sf::RenderTarget& target);
+	void DrawAll(sf::RenderTarget& target, sf::View mainView);
 
 protected:
+	FRect CalculateViewport(sf::View& view);
+
 	struct RenderInfo
 	{
 		const sf::Drawable* m_Drawable;

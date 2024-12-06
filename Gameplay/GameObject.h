@@ -37,6 +37,9 @@ public:
 	template<typename ComponentType> ComponentType* FindComponent();
 	template<typename ComponentType> const ComponentType* FindComponent() const;
 
+	template<typename ComponentType> std::vector<ComponentType*> FindAllComponentsByType();
+	template<typename ComponentType> std::vector<const ComponentType*> FindAllComponentsByType() const;
+
 	// A persistent object is updated and drawn at all times regardless of position.
 	// A non-persistent object is sorted into a world grid cell.
 	// Note: Currently, this must be constant for a single object.  It cannot change over time.
@@ -80,8 +83,6 @@ public:
 #endif
 
 protected:
-	//virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
-
 	RefTracker m_RefTracker;
 
 	// Pixel-perfect position and bounding box.
@@ -129,4 +130,34 @@ template<typename ComponentType>
 const ComponentType* GameObject::FindComponent() const
 {
 	return static_cast<const ComponentType*>(FindComponentByType(ComponentType::StaticType()));
+}
+
+template<typename ComponentType>
+std::vector<ComponentType*> GameObject::FindAllComponentsByType()
+{
+	std::vector<ComponentType*> output;
+	output.reserve(5); // should be enough I guess
+	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
+	{
+		if (NextComponent->GetTypeName() == ComponentType::StaticType())
+		{
+			output.push_back(static_cast<ComponentType*>(NextComponent.get()));
+		}
+	}
+	return output;
+}
+
+template<typename ComponentType>
+std::vector<const ComponentType*> GameObject::FindAllComponentsByType() const
+{
+	std::vector<const ComponentType*> output;
+	output.reserve(5); // should be enough I guess
+	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
+	{
+		if (NextComponent->GetTypeName() == ComponentType::StaticType())
+		{
+			output.push_back(static_cast<ComponentType*>(NextComponent.get()));
+		}
+	}
+	return output;
 }

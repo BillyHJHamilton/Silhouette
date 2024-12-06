@@ -120,7 +120,19 @@
     <ClCompile Include="App\WindowManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UserInterface\WidgetManager.cpp">
+    <ClCompile Include="UI\WidgetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Platformer\Components\HealthbarComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\RenderLayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Platformer\Components\HealthComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gameplay\Components\ScreenFadeComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -130,6 +142,7 @@
     </None>
     <None Include="Resources\Shaders\SimpleLight.frag" />
     <None Include="Resources\Shaders\LightShader.vert" />
+    <None Include="Resources\Shaders\HitFlash.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Gameplay\WorldGrid\TilePatch.h">
@@ -270,14 +283,26 @@
     <ClInclude Include="Platformer\Systems\PlayerSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UserInterface\Widget.h">
+    <ClInclude Include="UI\Widget.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="App\WindowManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UserInterface\WidgetManager.h">
+    <ClInclude Include="UI\WidgetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Platformer\Components\HealthbarComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Platformer\Components\HealthComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gameplay\Components\ScreenFadeComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Notes\ComponentTemplate.txt" />
   </ItemGroup>
 </Project>

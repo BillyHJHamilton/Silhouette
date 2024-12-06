@@ -18,5 +18,5 @@ private:
 	void OnEscapePressed();
 	void OnF11Pressed();
 
-	World m_MainWorld;
+	World m_World;
 };

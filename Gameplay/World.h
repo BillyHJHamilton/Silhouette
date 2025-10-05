@@ -29,9 +29,11 @@ public:
 	void AddObject(GameObject* newObject);
 	void UpdateObjectPosition(GameObject* object);
 	HitResult CheckForSolid(IntRect checkRect, GameObject* ignore = nullptr) const;
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const;
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const;
+	ObjectRef FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore = nullptr) const;
 
 	void SetMainView(sf::View& view);
-	void UpdateViewport();
 
 	int32 GetTickNumber() const { return m_TickNumber; }
 	int32 GetTicksSince(int32 pastTick) const { return m_TickNumber - pastTick; }

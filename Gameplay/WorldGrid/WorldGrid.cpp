@@ -133,7 +133,7 @@ IntVec WorldGridCell::TileXYToPosition(IntVec tileXY) const
 
 //-----------------------------------------------------------------------------
 
-#pragma region WorldCell
+#pragma region WorldGrid
 
 /*static*/ IntVec WorldGrid::PositionToCoords(IntVec worldPosition)
 {
@@ -275,8 +275,7 @@ HitResult WorldGrid::CheckForSolid(IntRect rect, GameObject* ignore) const
 	{
 		// No tile, so check for a solid object.
 		// We add some padding so if rect is on the edge of a cell, we also check the adjacent one.
-		const IntRect paddedRect(rect.left - c_PatchWidth/2, rect.top - c_PatchHeight/2,
-			rect.width + c_PatchWidth, rect.height + c_PatchHeight);
+		const IntRect paddedRect = Util::PadRect(rect, c_PatchWidth/2, c_PatchHeight/2);
 		ForEachCellInRect(paddedRect,
 			[&result, ignore, rect](const WorldGridCell& cell)
 			{
@@ -284,6 +283,67 @@ HitResult WorldGrid::CheckForSolid(IntRect rect, GameObject* ignore) const
 				return !result.IsHit();
 			}
 		);
+	}
+
+	if (!result.IsHit())
+	{
+		const ObjectRef ref = m_PersistentBucket.FindFirstHitByChannel(rect, "Solid", ignore);
+		result = HitResult(ref);
+	}
+
+	return result;
+}
+
+void WorldGrid::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
+{
+	// We add some padding so if rect is on the edge of a cell, we also check the adjacent one.
+	const IntRect paddedRect = Util::PadRect(rect, c_PatchWidth/2, c_PatchHeight/2);
+
+	ForEachCellInRect(paddedRect,
+		[rect, channelName, &gatherList](const WorldGridCell& cell)
+		{
+			cell.GetObjectBucket().GatherHitObjectsByChannel(rect, channelName, gatherList);
+			return true; // continue processing
+		}
+	);
+
+	m_PersistentBucket.GatherHitObjectsByChannel(rect, channelName, gatherList);
+}
+
+void WorldGrid::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
+{
+	// We add some padding so if rect is on the edge of a cell, we also check the adjacent one.
+	const IntRect paddedRect = Util::PadRect(rect, c_PatchWidth/2, c_PatchHeight/2);
+
+	ForEachCellInRect(paddedRect,
+		[rect, channelName, &gatherList](const WorldGridCell& cell)
+		{
+			cell.GetObjectBucket().GatherHitObjectsByChannel(rect, channelName, gatherList);
+			return true; // continue processing
+		}
+	);
+
+	m_PersistentBucket.GatherHitObjectsByChannel(rect, channelName, gatherList);
+}
+
+ObjectRef WorldGrid::FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore /*= nullptr*/) const
+{
+	ObjectRef result;
+
+	// We add some padding so if rect is on the edge of a cell, we also check the adjacent one.
+	const IntRect paddedRect = Util::PadRect(rect, c_PatchWidth/2, c_PatchHeight/2);
+
+	ForEachCellInRect(paddedRect,
+		[rect, channelName, ignore, &result](const WorldGridCell& cell)
+		{
+			result = cell.GetObjectBucket().FindFirstHitByChannel(rect, channelName, ignore);
+			return !result; // stop processing once found
+		}
+	);
+
+	if (!result)
+	{
+		result = m_PersistentBucket.FindFirstHitByChannel(rect, channelName, ignore);
 	}
 
 	return result;
@@ -342,4 +402,4 @@ void WorldGrid::ForEachCellInRect(IntRect rect, std::function<bool(const WorldGr
 	}
 }
 
-#pragma endregion WorldCell
+#pragma endregion WorldGrid

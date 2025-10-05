@@ -1,0 +1,25 @@
+Notes on how this game works
+
+The World Grid
+ - Each grid cell contains:
+  - Tiles ...
+  - GameObjects - Stored in an ObjectBucket
+ - There is also a special bucket for Persistent Objects, like the player.
+
+Collision Detection
+ - Every GameObject has a rectangular bounding box (an IntRect).
+ - Every GameObject belongs to 1 collision channel (a NameHash).
+  - Special values are "None" and "Solid".
+ - World provides several methods:
+  - CheckForSolid - Collides against both tiles and objects, returns a HitResult struct.
+  - GatherHitObjectsByChannel - Finds objects of a given channel overlapping a rectangle.
+  - FindFirstHitByChannel - Similar, but only returns one object.
+  - These functions work by delegating down to check each nearby grid cell.
+ - An object can use GatherHitObjectsByChannel in its Tick to handle whatever collisions it cares about.
+  - Once you find a GameObject, you could try casting it or find a relevant component.
+
+Movement and Solid Objects
+ - GameObject provides TryMoveX and TryMoveY, which move unless/until a solid object (or tile) is hit.
+  - The object moves forward one pixel at a time, collision checking ahead of itself.
+ - They return a HitResult so you can react if you hit something.
+

@@ -65,6 +65,21 @@ HitResult World::CheckForSolid(IntRect checkRect, GameObject* ignore) const
 	return m_WorldGrid->CheckForSolid(checkRect, ignore);
 }
 
+void World::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
+{
+	return m_WorldGrid->GatherHitObjectsByChannel(rect, channelName, gatherList);
+}
+
+void World::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
+{
+	return m_WorldGrid->GatherHitObjectsByChannel(rect, channelName, gatherList);
+}
+
+ObjectRef World::FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore /*= nullptr*/) const
+{
+	return m_WorldGrid->FindFirstHitByChannel(rect, channelName, ignore);
+}
+
 void World::AddObject(GameObject* newObject)
 {
 	newObject->SetWorld(this);

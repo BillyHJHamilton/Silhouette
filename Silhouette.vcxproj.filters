@@ -135,6 +135,9 @@
     <ClCompile Include="Gameplay\Components\ScreenFadeComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Util\Rect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\LightShader.frag">
@@ -304,5 +307,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Notes\ComponentTemplate.txt" />
+    <Text Include="Notes\Architecture.txt" />
   </ItemGroup>
 </Project>

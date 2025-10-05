@@ -33,7 +33,7 @@ struct HitResult
 	{ }
 
 	HitResult(ObjectRef object) :
-		m_Result(HitObject),
+		m_Result(object ? HitObject : NoHit),
 		m_Object(object)
 	{ }
 

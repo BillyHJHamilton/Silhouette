@@ -38,6 +38,7 @@ void PlatformerApp::StartupInit()
 void PlatformerApp::ShutdownCleanup()
 {
 	m_InputEventManager->GetKeyPressedEvent(sf::Keyboard::Escape).RemoveDelegatesForReceiver(this);
+	m_InputEventManager->GetKeyPressedEvent(sf::Keyboard::F11).RemoveDelegatesForReceiver(this);
 }
 
 void PlatformerApp::OnEscapePressed()

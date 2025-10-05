@@ -28,8 +28,8 @@ public:
 	void GatherAllObjects(ObjectConstRefList& gatherList) const;
 	void GatherObjectsByChannel(NameHash channelName, ObjectRefList& gatherList) const;
 	void GatherObjectsByChannel(NameHash channelName, ObjectConstRefList& gatherList) const;
-	void GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const;
-	void GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const;
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const;
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const;
 
 	ObjectRef FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore = nullptr) const;
 

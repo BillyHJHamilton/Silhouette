@@ -72,7 +72,7 @@ void ObjectBucket::GatherObjectsByChannel(NameHash channelName, ObjectConstRefLi
 	}
 }
 
-void ObjectBucket::GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
+void ObjectBucket::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{
@@ -85,7 +85,7 @@ void ObjectBucket::GatherObjectsHitByChannel(IntRect rect, NameHash channelName,
 	}
 }
 
-void ObjectBucket::GatherObjectsHitByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
+void ObjectBucket::GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const
 {
 	for (const std::unique_ptr<GameObject>& objectPtr : m_ObjectList)
 	{

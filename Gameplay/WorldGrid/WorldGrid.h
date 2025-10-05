@@ -66,6 +66,10 @@ public:
 
 	HitResult CheckForSolid(IntRect rect, GameObject* ignore = nullptr) const;
 
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectRefList& gatherList) const;
+	void GatherHitObjectsByChannel(IntRect rect, NameHash channelName, ObjectConstRefList& gatherList) const;
+	ObjectRef FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore = nullptr) const;
+
 	void GatherDraw(RenderManager& renderManager, IntRect gatherRect) const;
 
 protected:

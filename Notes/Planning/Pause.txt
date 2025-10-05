@@ -1,0 +1,19 @@
+We'll need a way to pausing the simulation.
+And maybe slow motion, though player mechanics are currently per-frame rather than per time.
+But some other things should still update.
+This is a little tricky.
+
+For example, when the player dies, I'd like to freeze the world and fade out.
+Then display a "Game Over" text.
+And listen for pressing Enter.
+And then restart the world.
+
+So the FadeOutComponent still needs to tick.
+But other components shouldn't.
+
+We could create a separate "UI Tick" that has receives a different delta time.
+Or we could have a World->IsPaused and check it everywhere and eschew updates if it's true.
+Or we could have Component->TicksWhenPaused.
+Then we check that on each component.
+And it could be overridded per instance if needed.
+That might be the best for now.

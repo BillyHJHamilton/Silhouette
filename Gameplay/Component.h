@@ -19,6 +19,8 @@ public:
 	const World* GetWorld() const;
 	World* GetWorld();
 
+	virtual bool ShouldTickWhenPaused() const { return false; }
+
 	virtual void Tick(float deltaTime) {};
 	virtual void GatherDraw(RenderManager& renderManager, const sf::Transform& ObjectTransform) const {}
 

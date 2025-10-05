@@ -77,8 +77,9 @@ protected:
 	bool IsPressingRight(const InputEventManager& inputManager) const;
 
 	void OnPressJump();
-	void OnPressL();
 	void OnPressK();
+	void OnPressL();
+	void OnPressP();
 	void OnPressAnyButton(uint32 buttonId);
 	void OnAnimationEnd();
 

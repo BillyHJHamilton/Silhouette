@@ -308,5 +308,6 @@
   <ItemGroup>
     <Text Include="Notes\ComponentTemplate.txt" />
     <Text Include="Notes\Architecture.txt" />
+    <Text Include="Notes\Planning\Pause.txt" />
   </ItemGroup>
 </Project>

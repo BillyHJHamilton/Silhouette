@@ -30,10 +30,14 @@ void World::Tick(float deltaTime)
 	const IntVec tickSize = RoundToIntVec(3.0f * m_MainView.getSize());
 	const IntRect tickRect(tickTopLeft, tickSize);
 
-	m_WorldGrid->TickObjects(deltaTime, tickRect);
+	m_WorldGrid->TickObjects(deltaTime, tickRect, m_IsPaused);
 
-	++m_TickNumber;
-	m_WorldTime += deltaTime;
+	// WorldTime and TickNumber don't advance when paused.
+	if (!m_IsPaused)
+	{
+		++m_TickNumber;
+		m_WorldTime += deltaTime;
+	}
 }
 
 void World::Draw(sf::RenderTarget& renderTarget) const

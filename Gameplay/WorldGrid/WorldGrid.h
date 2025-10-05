@@ -62,7 +62,7 @@ public:
 
 	void AddObject(GameObject* object);
 	void UpdateObjectPosition(GameObject* object);
-	void TickObjects(float deltaTime, IntRect tickArea);
+	void TickObjects(float deltaTime, IntRect tickArea, bool isPaused);
 
 	HitResult CheckForSolid(IntRect rect, GameObject* ignore = nullptr) const;
 

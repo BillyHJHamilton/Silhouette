@@ -232,7 +232,7 @@ void WorldGrid::UpdateObjectPosition(GameObject* object)
 	}
 }
 
-void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
+void WorldGrid::TickObjects(float deltaTime, IntRect tickArea, bool isPaused)
 {
 	PerfTimer timer(__FUNCTION__);
 	assert(m_TickList.empty());
@@ -251,7 +251,7 @@ void WorldGrid::TickObjects(float deltaTime, IntRect tickArea)
 	{
 		if (GameObject* object = ref.Get())
 		{
-			object->GameObjectTick(deltaTime);
+			object->GameObjectTick(deltaTime, isPaused);
 		}
 	}
 

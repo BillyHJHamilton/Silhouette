@@ -38,7 +38,7 @@ void GameObject::CheckMemoryReleased()
 }
 #endif
 
-void GameObject::GameObjectTick(float deltaTime)
+void GameObject::GameObjectTick(float deltaTime, bool isPaused)
 {
 	assert(m_World != nullptr);
 	assert(m_Bucket != nullptr);
@@ -46,11 +46,17 @@ void GameObject::GameObjectTick(float deltaTime)
 	// Tick components
 	for (std::unique_ptr<Component>& nextComponent : m_ComponentList)
 	{
-		nextComponent->Tick(deltaTime);
+		if (!isPaused || nextComponent->ShouldTickWhenPaused())
+		{
+			nextComponent->Tick(deltaTime);
+		}
 	}
 
 	// Trigger derived class trick.
-	Tick(deltaTime);
+	if (!isPaused || ShouldTickWhenPaused())
+	{
+		Tick(deltaTime);
+	}
 }
 
 Component* GameObject::AddComponent(Component* newComponent)

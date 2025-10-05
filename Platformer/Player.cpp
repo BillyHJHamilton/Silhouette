@@ -74,8 +74,9 @@ void Player::Init()
 	m_DebugText->m_Text.setCharacterSize(32);
 	m_DebugText->SetVisible(false);
 
-	inputManager.GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
 	inputManager.GetKeyPressedEvent(sf::Keyboard::K).AddWeakRef(GetWeakPlayer(), &Player::OnPressK);
+	inputManager.GetKeyPressedEvent(sf::Keyboard::L).AddWeakRef(GetWeakPlayer(), &Player::OnPressL);
+	inputManager.GetKeyPressedEvent(sf::Keyboard::P).AddWeakRef(GetWeakPlayer(), &Player::OnPressP);
 
 	//-------------------------------------------------------------------------
 }
@@ -324,7 +325,15 @@ bool Player::IsPressingRight(const InputEventManager& inputManager) const
 
 void Player::OnPressJump()
 {
-	m_JumpPressedFrame = GetWorld()->GetTickNumber();
+	if (!GetWorld()->IsPaused())
+	{
+		m_JumpPressedFrame = GetWorld()->GetTickNumber();
+	}
+}
+
+void Player::OnPressK()
+{
+	m_HealthComponent->ApplyDamage(10.0f);
 }
 
 void Player::OnPressL()
@@ -332,9 +341,9 @@ void Player::OnPressL()
 	m_DebugLight->ToggleEnabled();
 }
 
-void Player::OnPressK()
+void Player::OnPressP()
 {
-	m_HealthComponent->ApplyDamage(10.0f);
+	GetWorld()->SetPaused(!GetWorld()->IsPaused());
 }
 
 void Player::OnPressAnyButton(uint32 buttonId)

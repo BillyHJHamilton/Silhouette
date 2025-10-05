@@ -19,8 +19,12 @@ public:
 	virtual void Init() {};
 
 	// Called on a framely basis while within the simulation area.
-	void GameObjectTick(float deltaTime);
+	void GameObjectTick(float deltaTime, bool isPaused);
 	virtual void Tick(float deltaTime) {}
+
+	// Whether to run the derived object Tick when the game is paused.
+	// Components ignore this and tick depending on their own ShouldTickWhenPaused function.
+	virtual bool ShouldTickWhenPaused() const { return false; }
 
 	virtual void GatherDraw(RenderManager& renderManager) const;
 

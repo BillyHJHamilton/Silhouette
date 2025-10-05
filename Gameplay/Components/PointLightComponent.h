@@ -9,6 +9,7 @@ class PointLightComponent : public Component
 public:
 	MACRO_DeclareTypeInfo(PointLightComponent)
 
+	virtual bool ShouldTickWhenPaused() const override { return true; }
 	virtual void Tick(float deltaTime) override;
 
 	void SetColour(sf::Vector3f colour) { m_Colour = colour; }

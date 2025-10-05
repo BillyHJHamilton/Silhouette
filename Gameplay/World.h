@@ -34,12 +34,15 @@ public:
 	ObjectRef FindFirstHitByChannel(IntRect rect, NameHash channelName, GameObject* ignore = nullptr) const;
 
 	void SetMainView(sf::View& view);
-
+	
 	int32 GetTickNumber() const { return m_TickNumber; }
 	int32 GetTicksSince(int32 pastTick) const { return m_TickNumber - pastTick; }
 	int32 GetTicksUntil(int32 futureTick) const { return futureTick - m_TickNumber; }
 
 	double GetWorldTime() const { return m_WorldTime; }
+
+	void SetPaused(bool paused) { m_IsPaused = paused; }
+	bool IsPaused() const { return m_IsPaused; }
 
 	static constexpr int32 c_InvalidFrame = -999;
 
@@ -52,6 +55,8 @@ protected:
 	// Counters incremented at end of each world tick.
 	int32 m_TickNumber = 0;
 	double m_WorldTime = 0.0;
+
+	bool m_IsPaused = false;
 
 	// List of other singletons managed by World.h.  Automatically instantiated when requested.
 	// As a rule, if the object is used in World.cpp, it should be a unique_ptr like WorldGrid.

@@ -1,5 +1,11 @@
 Notes on how this game works
 
+TypeInfo
+ - A TypeInfo is a NameHash statically associated with a class type.
+ - This lets us easily store GameSystems in a hash map, for instance.
+ - Currently, only Components and GameSystems use the TypeInfo system.
+ - For GameObjects there hasn't really been a need yet.
+
 The World Grid
  - Each grid cell contains:
   - Tiles ...
@@ -21,5 +27,10 @@ Collision Detection
 Movement and Solid Objects
  - GameObject provides TryMoveX and TryMoveY, which move unless/until a solid object (or tile) is hit.
   - The object moves forward one pixel at a time, collision checking ahead of itself.
- - They return a HitResult so you can react if you hit something.
+ - These functions return a HitResult so you can react if you hit something.
 
+UI
+ - Objects render in screenspace if rendered on a UI layer.
+ - So far, I don't have nay way to "align centre" or "align right".  We assume fixed resolution.
+ - At one point I started adding a Widget system but this is *unfinished and not currently used*.
+  - I may delete it if it isn't useful.

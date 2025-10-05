@@ -11,10 +11,13 @@ public:
 	ScreenFadeComponent(sf::Color colour = sf::Color::Black);
 
 	virtual void OnAddedToObject(GameObject& newOwner) override;
+	virtual bool ShouldTickWhenPaused() const override { return m_FadeWhenPaused; }
 	virtual void Tick(float deltaTime) override;
 	virtual void GatherDraw(RenderManager& renderManager, const sf::Transform& ObjectTransform) const override;
 
 	void SetColour(sf::Color colour);
+
+	void SetFadeWhenPaused(bool newSetting) { m_FadeWhenPaused = newSetting; }
 
 	void SetFadePercent(float percent) { m_FadePercent = percent; }
 	void SetFadeInSpeed(float speed) { m_FadeInSpeed = speed; }
@@ -42,4 +45,6 @@ protected:
 	float m_FadePercent = 0.0f;
 	float m_FadeOutSpeed = 0.0f; // Speed when fading to solid colour.
 	float m_FadeInSpeed = 0.0f; // Speed when fading back in to normal scene.
+
+	float m_FadeWhenPaused = true;
 };

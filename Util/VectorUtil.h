@@ -9,7 +9,7 @@ namespace Util
 	// Basic functions for searching.
 
 	template<typename VectorItemType, typename ValueType>
-	auto Find(std::vector<VectorItemType> vector, ValueType value)
+	auto Find(const std::vector<VectorItemType>& vector, ValueType value)
 	{
 		return std::find(vector.begin(), vector.end(), value);
 	}

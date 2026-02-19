@@ -193,3 +193,8 @@ void GameObject::GatherDraw(RenderManager& renderManager) const
 		NextComponent->GatherDraw(renderManager, objectTransform);
 	}
 }
+
+NameHash GameObject::GetComponentTypeName(const std::unique_ptr<Component>& compPtr)
+{
+	return compPtr->GetTypeName();
+}

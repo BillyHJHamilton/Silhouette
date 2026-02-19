@@ -87,6 +87,9 @@ public:
 #endif
 
 protected:
+	// This is here because I don't want to expose Component.h to the header.
+	NameHash GetComponentTypeName(const std::unique_ptr<Component>& compPtr);
+
 	RefTracker m_RefTracker;
 
 	// Pixel-perfect position and bounding box.
@@ -143,7 +146,7 @@ std::vector<ComponentType*> GameObject::FindAllComponentsByType()
 	output.reserve(5); // should be enough I guess
 	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
 	{
-		if (NextComponent->GetTypeName() == ComponentType::StaticType())
+		if (GetComponentTypeName(NextComponent) == ComponentType::StaticType())
 		{
 			output.push_back(static_cast<ComponentType*>(NextComponent.get()));
 		}
@@ -158,7 +161,7 @@ std::vector<const ComponentType*> GameObject::FindAllComponentsByType() const
 	output.reserve(5); // should be enough I guess
 	for (const std::unique_ptr<Component>& NextComponent : m_ComponentList)
 	{
-		if (NextComponent->GetTypeName() == ComponentType::StaticType())
+		if (GetComponentTypeName(NextComponent) == ComponentType::StaticType())
 		{
 			output.push_back(static_cast<ComponentType*>(NextComponent.get()));
 		}
